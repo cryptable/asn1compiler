@@ -3,15 +3,15 @@ grammar asn1;
 moduleDefinition: moduleIdentifier
 	  'DEFINITIONS'
 	  encodingReferenceDefault
-	  TagDefault
-	  ExtensionDefault
+	  TAGDEFAULT
+	  EXTENSIONDEFAULT
 	  '::='
 	  'BEGIN'
 	  moduleBody
 	  encodingControlSections
 	  'END';
 
-moduleIdentifier: modulereference definitiveIdentification;
+moduleIdentifier: MODULEREFERENCE definitiveIdentification;
 
 definitiveIdentification: definitiveOID | definitiveOIDandIRI | ;
 
@@ -23,15 +23,15 @@ definitiveObjIdComponentList: (definitiveObjIdComponent)+ ;
 
 definitiveObjIdComponent: nameForm | definitiveNumberForm | definitiveNameAndNumberForm;
 
-definitiveNumberForm : number;
+definitiveNumberForm : NUMBER;
 
-definitiveNameAndNumberForm: identifier '(' definitiveNumberForm ')';
+definitiveNameAndNumberForm: IDENTIFIER '(' definitiveNumberForm ')';
 
 encodingReferenceDefault: encodingreference 'INSTRUCTIONS' | ;
 
-TagDefault: 'EXPLICIT TAGS' | 'IMPLICIT TAGS' | 'AUTOMATIC TAGS' | ;
+TAGDEFAULT: 'EXPLICIT TAGS' | 'IMPLICIT TAGS' | 'AUTOMATIC TAGS' | ;
 
-ExtensionDefault: 'EXTENSIBILITY IMPLIED' | ;
+EXTENSIONDEFAULT: 'EXTENSIBILITY IMPLIED' | ;
 
 moduleBody: exports imports assignmentList | ;
 
@@ -822,11 +822,11 @@ primitiveFieldName
 fieldName: primitiveFieldName ('.' primitiveFieldName)* ;
 
 // chapter 10 Syntax List
-syntaxList: '{' tokenOrGroupSpec (WhiteSpace tokenOrGroupSpec)* '}' ;
+syntaxList: '{' tokenOrGroupSpec (WS tokenOrGroupSpec)* '}' ;
 
 tokenOrGroupSpec: requiredToken | optionalGroup ;
 
-optionalGroup: '[' tokenOrGroupSpec (WhiteSpace tokenOrGroupSpec)* ']' ;
+optionalGroup: '[' tokenOrGroupSpec (WS tokenOrGroupSpec)* ']' ;
 
 requiredToken: literal | primitiveFieldName ;
 
@@ -843,7 +843,7 @@ defaultSyntax: '{' fieldSetting (',' fieldSetting)* '}' ;
 
 fieldSetting: primitiveFieldName setting ;
 
-definedSyntax: '{' definedSyntaxToken (WhiteSpace definedSyntaxToken)* '}' ;
+definedSyntax: '{' definedSyntaxToken (WS definedSyntaxToken)* '}' ;
 
 definedSyntaxToken: literal | setting ;
 
@@ -909,7 +909,7 @@ instanceOfValue: value ;
 xMLInstanceOfValue: xMLValue ;
 
 // Chapter 54 Encoding Control Sections
-encodingControlSections : encodingControlSection (WhiteSpace encodingControlSections)* ;
+encodingControlSections : encodingControlSection (WS encodingControlSections)* ;
 
 encodingControlSection: 'ENCODING-CONTROL' encodingreference encodingInstructionAssignmentList ;
 
@@ -1004,32 +1004,32 @@ actualParameter: type | value | valueSet | definedObjectClass | object | objectS
 
 // Lexer
 // -----
-WhiteSpace : [\t\n\0x11\0x12\r ] ;
-NewLine: [\n\0x11\0x12\r] ;
-Letter: [a-zA-Z] ;
-UpperCase: [A-Z] ;
-LowerCase: [a-z] ;
-AlphaNumeric: [a-zA-Z0-9] ;
-Number: [0-9] ;
-NonZero: [1-9] ;
-Bit: [01] ;
-Hex: [0-9A-F] ;
-XMLHex: [0-9A-Fa-f] ;
-CString: ~[\"] ;
-XMLCharacters: [\x09\x10\x13\x0020-\xD7FF\xE000-\xFFFD\x010000-\x10FFFF] ;
-XMLCharCodes: '&#' Number* ';' ;
-XMLCharHexCodes: '&#x' XMLHex* ';' ;
-XMLCharAmpCodes: '&amp;' | '&lt;' | '&gt;' ;
-XMLCharXMLCodes
+WS : [\t\n\0x11\0x12\r ] ;
+NEWLINE: [\n\0x11\0x12\r] ;
+LETTER: [a-zA-Z] ;
+UPPERCASE: [A-Z] ;
+LOWERCASE: [a-z] ;
+ALPHANUMERIC: [a-zA-Z0-9] ;
+WITHZERO: [0-9] ;
+NONZERO: [1-9] ;
+BIT: [01] ;
+HEX: [0-9A-F] ;
+XMLHEX: [0-9A-Fa-f] ;
+CSTRINGCHAR: ~[\"] ;
+XMLCHARACTER: [\x09\x10\x13\x0020-\xD7FF\xE000-\xFFFD\x010000-\x10FFFF] ;
+XMLCHARCODES: '&#' Number* ';' ;
+XMLCHARHEXCODES: '&#x' XMLHex* ';' ;
+XMLCHARAMPCODES: '&amp;' | '&lt;' | '&gt;' ;
+XMLCHARXMLCODES
 	: '<nul/>' | '<soh/>' | '<stx/>' | '<etx/>' | '<eot/>' | '<enq/>' | '<ack/>' | '<bel/>' | '<bs/>'
 	| '<vt/>' | '<ff/>' | '<so/>' | '<si/>' | '<dle/>' | '<dc1/>' | '<dc2/>' | '<dc3/>' | '<dc4/>' | '<nak/>'
 	| '<syn/>' | '<etb/>' | '<can/>' | '<em/>' | '<sub/>' | '<esc/>' | '<is4/>' | '<is3/>' | '<is2/>' | '<is1/>' ;
 
-SimpleStringCodes: [\x32-\x7E] ;
+SIMPLESTRINGCODES: [\x32-\x7E] ;
 
-TString: [0-9+-:.,/CDHMRPSTWYZ] ;
+TSTRINGCHARACTER: [0-9+-:.,/CDHMRPSTWYZ] ;
 
-UnicodeNonInteger
+UNICODENONINTEGER
 	: [-._~0-9A-Za-z]
 	| [\x000000A0-\x0000DFFE]
 	| [\x0000F900-\x0000FDCF]
@@ -1053,77 +1053,77 @@ UnicodeNonInteger
 	| [\x000E1000-\x000EFFFD] ;
 
 // chapter 12.2 Type references
-typereference: UpperCase (AlphaNumeric | '-' AlphaNumeric)* ;
+TYPEREFERENCE: UpperCase (AlphaNumeric | '-' AlphaNumeric)* ;
 
 // chapter 12.3 Identifiers
-identifier: LowerCase (AlphaNumeric | '-' AlphaNumeric)* ;
+IDENTIFIER: LowerCase (AlphaNumeric | '-' AlphaNumeric)* ;
 
 // chapter 12.4 Value references
-valuereference: identifier ;
+VALUEREFERENCE: IDENTIFIER ;
 
 // chapter 12.5 Module references
-modulereference: typereference ;
+MODULEREFERENCE: TYPEREFERENCE ;
 
 // chapter 12.6 Comments
-comment: '--' ~NewLine* NewLine | '--' ~NewLine? '--' | '/*' .*? '*/' ;
+COMMENT: '--' ~NEWLINE* NEWLINE | '--' ~NEWLINE? '--' | '/*' .*? '*/' ;
 
 // chapter 12.7 Empty
-empty: ;
+EMPTY: ;
 
 // chapter 12.8 Numbers
-number: Number | NonZero Number*;
+NUMBER: WITHZERO | NONZERO WITHZERO*;
 
 // chapter 12.9 Real numbers
-realnumber: number ('.' number)?;
+REALNUMBER: NUMBER ('.' NUMBER*)?;
 
 // chapter 12.10 XML Binary string
-bstring: Bit+ | '\'' Bit+ '\'B' ;
+BSTRING: BIT+ | '\'' BIT+ '\'B' ;
 
 // chapter 12.11 XML Binary string
-xmlbstring: Bit+ ;
+XMLBSTRING: BIT+ ;
 
 // chapter 12.12 Hexadecimal string
-hstring: Hex+ | '\'' Hex+ '\'H' ;
+HSTRING: HEX+ | '\'' HEX+ '\'H' ;
 
 // chapter 12.13 XML hexadecimal string item
-xmlhstring: XMLHex+ ;
+XMLHSTRING: XMLHEX+ ;
 
 // chapter 12.14 Character strings
 // TODO: extend further according to ISO/IEC 8824
-cstring: ('"' CString+ '"')+;
+CSTRING: ('"' CSTRINGCHAR+ '"')+;
 
 // chapter 12.15 XML character string item
-xmlcstring: (XMLCharacters | XMLCharCodes | XMLCharHexCodes | XMLCharAmpCodes | XMLCharXMLCodes)*;
+XMLCSTRING: (XMLCHARACTER | XMLCHARCODES | XMLCHARHEXCODES | XMLCHARAMPCODES | XMLCHARXMLCODES)*;
 
 // chapter 12.16 Simple string item
-simplestring: '"' SimpleStringCodes+ '"' ;
+SIMPLESTRING: '"' SIMPLESTRINGCODES+ '"' ;
 
 // chapter 12.17 Time string item
-tstring: '"' TString+ '"' ;
+TSTRING: '"' TSTRINGCHARACTER+ '"' ;
 
 // chapter 12.18 XML Time string item
-xmltstring: TString+ ;
+XMLTSTRING: TSTRINGCHARACTER+ ;
 
 // chapter 12.19 property and settings name lexical item
-psname: UpperCase (AlphaNumeric | '-' AlphaNumeric)* ;
+PSNAME: UPPERCASE (ALPHANUMERIC | '-' ALPHANUMERIC)* ;
 
 // chapter 12.25 encoding references
-encodingreference: typereference ;
+ENCODINGREFERENCE: TYPEREFERENCE ;
 
 // chapter 12.26 Integer-valued Unicode labels ;
-integerUnicodeLabel: Number ;
+INTEGERUNICODELABEL: NUMBER ;
 
 // chapter 12.27 Non-integer Unicode labels ;
-nonintegerUnicodeLabel: UnicodeNonInteger ;
+NONINTEGERUNICODELABEL: UNICODENONINTEGER ;
 
 // chapter 12.31 XML boolean extended-true item
-extended_true : 'true' | '1' ;
+EXTENDED_TRUE: 'true' | '1' ;
 
 // chapter 12.33 XML boolean extended-false item
-extended_false : 'false' | '0' ;
+EXTENDED_FALSE: 'false' | '0' ;
 
 // chapter 12.38
-reserved
+RESERVED
 	: 'ABSENT' | 'ENCODED' | 'INTERSECTION' | 'SEQUENCE' | 'ABSTRACT-SYNTAX' | 'ENCODING-CONTROL' | 'ISO646String SET'
 	| 'ALL' | 'END' | 'MAX' | 'SETTINGS' | 'APPLICATION' | 'ENUMERATED' | 'MIN' | 'SIZE'
 	| 'AUTOMATIC' 'EXCEPT' 'MINUS-INFINITY' 'STRING'
@@ -1146,7 +1146,7 @@ reserved
 	| 'DURATION' | 'INSTRUCTIONS' | 'RELATIVE-OID' | 'WITH'
 	| 'EMBEDDED' | 'INTEGER' | 'RELATIVE-OID-IRI' ;
 
-xmlasn1typename
+XMLASN1TYPENAME
 	: 'BIT_STRING' | 'BOOLEAN' | 'CHOICE' | 'DATE'
 	| 'DATE_TIME' | 'DURATION' | 'SEQUENCE' | 'ENUMERATED'
 	| 'INTEGER' | 'OID_IRI' | 'NULL' | 'OCTET_STRING'
@@ -1154,21 +1154,21 @@ xmlasn1typename
 	| 'SET' | 'SET_OF' | 'TIME' | 'TIME_OF_DAY' ;
 
 // ITU X.681
-objectclassreference: typereference ;
+OBJECTCLASSREFERENCE: TYPEREFERENCE ;
 
-objectreference: valuereference ;
+OBJECTREFERENCE: VALUEREFERENCE ;
 
-objectsetreference: typereference ;
+OBJECTSETREFERENCE: TYPEREFERENCE ;
 
-typefieldreference: '&' typereference ;
+TYPEFIELDREFERENCE: '&' TYPEREFERENCE ;
 
-valuefieldreference: '&' valuereference ;
+VALUEFIELDREFERENCE: '&' VALUEREFERENCE ;
 
-valuesetfieldreference: '&' typereference ;
+VALUESETFIELDREFERENCE: '&' TYPEREFERENCE ;
 
-objectfieldreference: '&' objectreference ;
+OBJECTFIELDREFERENCE: '&' OBJECTREFERENCE ;
 
-objectsetfieldreference: '&' objectsetreference ;
+OBJECTSETFIELDREFERENCE: '&' OBJECTSETREFERENCE ;
 
-word: typereference ;
-
+WORD: TYPEREFERENCE ;
+s
