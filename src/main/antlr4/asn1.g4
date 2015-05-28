@@ -27,11 +27,7 @@ definitiveNumberForm : NUMBER;
 
 definitiveNameAndNumberForm: IDENTIFIER '(' definitiveNumberForm ')';
 
-encodingReferenceDefault: encodingreference 'INSTRUCTIONS' | ;
-
-TAGDEFAULT: 'EXPLICIT TAGS' | 'IMPLICIT TAGS' | 'AUTOMATIC TAGS' | ;
-
-EXTENSIONDEFAULT: 'EXTENSIBILITY IMPLIED' | ;
+encodingReferenceDefault: ENCODINGREFERENCE 'INSTRUCTIONS' | ;
 
 moduleBody: exports imports assignmentList | ;
 
@@ -47,7 +43,7 @@ symbolsFromModuleList: (symbolsFromModule)* ;
 
 symbolsFromModule: symbolList 'FROM' globalModuleReference ;
 
-globalModuleReference: modulereference assignedIdentifier ;
+globalModuleReference: MODULEREFERENCE assignedIdentifier ;
 
 assignedIdentifier: objectIdentifierValue | definedValue | ;
 
@@ -55,7 +51,7 @@ symbolList: symbol (',' symbol)* ;
 
 symbol: reference | parameterizedReference ;
 
-reference: typereference | valuereference | objectclassreference | objectreference | objectsetreference ;
+reference: TYPEREFERENCE | VALUEREFERENCE | OBJECTCLASSREFERENCE | OBJECTREFERENCE | OBJECTSETREFERENCE ;
 
 assignmentList: (assignment)* ;
 
@@ -70,30 +66,30 @@ assignment
 	| parameterizedAssignment ;
 
 // Chapter 14 Referencing type and value definitions
-definedType: externalTypeReference | typereference | parameterizedType | parameterizedValueSetType ;
+definedType: externalTypeReference | TYPEREFERENCE | parameterizedType | parameterizedValueSetType ;
 
-definedValue: externalValueReference | valuereference | parameterizedValue ;
+definedValue: externalValueReference | VALUEREFERENCE | parameterizedValue ;
 
-nonParameterizedTypeName: externalTypeReference | typereference | xmlasn1typename ;
+nonParameterizedTypeName: externalTypeReference | TYPEREFERENCE | XMLASN1TYPENAME ;
 
-externalTypeReference: modulereference '.' typereference ;
+externalTypeReference: MODULEREFERENCE '.' TYPEREFERENCE ;
 
-externalValueReference: modulereference '.' valuereference ;
+externalValueReference: MODULEREFERENCE '.' VALUEREFERENCE ;
 
 // Chapter 15
 
 // Chapter 16
-typeAssignment: typereference '::=' type ;
+typeAssignment: TYPEREFERENCE '::=' type ;
 
-valueAssignment: valuereference type '::=' value ;
+valueAssignment: VALUEREFERENCE type '::=' value ;
 
-xMLValueAssignment: valuereference '::=' xMLTypedValue ;
+xMLValueAssignment: VALUEREFERENCE '::=' xMLTypedValue ;
 
 xMLTypedValue
 	: '<' nonParameterizedTypeName '>' xMLValue '</' nonParameterizedTypeName '>'
 	| '<' nonParameterizedTypeName '/>' ;
 
-valueSetTypeAssignment: typereference type '::=' valueSet ;
+valueSetTypeAssignment: TYPEREFERENCE type '::=' valueSet ;
 
 valueSet: '{' elementSetSpecs '}' ;
 
@@ -135,7 +131,7 @@ referencedType
 	| typeFromObject
 	| valueSetFromObjects ;
 
-namedType: identifier type ;
+namedType: IDENITIFIER type ;
 
 value
 	: builtinValue
@@ -198,9 +194,9 @@ referencedValue
 	: definedValue
 	| valueFromObject ;
 
-namedValue: identifier Value ;
+namedValue: IDENITIFIER Value ;
 
-xMLNamedValue: '<' identifier '>' XMLValue '</' identifier '>' ;
+xMLNamedValue: '<' IDENITIFIER '>' XMLValue '</' IDENITIFIER '>' ;
 
 /** Boolean value */
 booleanType: 'BOOLEAN' ;
@@ -216,8 +212,8 @@ emptyElementBoolean
 	| '<' 'false' '/>' ;
 
 textBoolean
-	: extended_true
-	| extended_false ;
+	: EXTENDED_TRUE
+	| EXTENDED_FALSE ;
 
 /** Integer type */
 integerType
@@ -227,25 +223,25 @@ integerType
 namedNumberList: namedNumber (',' namedNumber)* ;
 
 namedNumber
-	: identifier '(' signedNumber ')'
-	| identifier '(' definedValue ')' ;
+	: IDENITIFIER '(' signedNumber ')'
+	| IDENITIFIER '(' definedValue ')' ;
 
-signedNumber: '-'? number ;
+signedNumber: '-'? NUMBER ;
 
 integerValue
 	: signedNumber
-	| identifier ;
+	| IDENITIFIER ;
 
 xMLIntegerValue
 	: xMLSignedNumber
 	| emptyElementInteger
 	| textInteger ;
 
-xMLSignedNumber: '-'? number;
+xMLSignedNumber: '-'? NUMBER;
 
-emptyElementInteger: '<' identifier '/>' ;
+emptyElementInteger: '<' IDENITIFIER '/>' ;
 
-textInteger: identifier ;
+textInteger: IDENITIFIER ;
 
 /** Enumeration Type */
 enumeratedType: ENUMERATED '{' enumerations '}' ;
@@ -261,15 +257,15 @@ additionalEnumeration: enumeration ;
 
 enumeration: enumerationItem | (',' enumerationItem)* ;
 
-enumerationItem: identifier | namedNumber ;
+enumerationItem: IDENITIFIER | namedNumber ;
 
-enumeratedValue: identifier ;
+enumeratedValue: IDENITIFIER ;
 
 xMLEnumeratedValue: emptyElementEnumerated | textEnumerated ;
 
-emptyElementEnumerated: '<' identifier '/>' ;
+emptyElementEnumerated: '<' IDENITIFIER '/>' ;
 
-textEnumerated: identifier ;
+textEnumerated: IDENITIFIER ;
 
 /** Real Type */
 realType: 'REAL' ;
@@ -279,7 +275,7 @@ realValue
 	| specialRealValue ;
 
 numericRealValue
-	: '-'? realnumber
+	: '-'? REALNUMBER
 	| sequenceValue ;
 
 specialRealValue
@@ -289,7 +285,7 @@ specialRealValue
 
 xMLRealValue: xMLNumericRealValue | xMLSpecialRealValue ;
 
-xMLNumericRealValue: '-'? realnumber ;
+xMLNumericRealValue: '-'? REALNUMBER ;
 
 xMLSpecialRealValue: emptyElementReal | textReal ;
 
@@ -307,7 +303,7 @@ bitStringType: 'BIT STRING' | 'BIT STRING' '{' namedBitList '}' ;
 
 namedBitList: namedBit (',' namedBit)* ;
 
-namedBit: identifier '(' number ')' | identifier '(' definedValue ')' ;
+namedBit: IDENITIFIER '(' NUMBER ')' | IDENITIFIER '(' definedValue ')' ;
 
 bitStringValue
 	: bstring
@@ -316,15 +312,15 @@ bitStringValue
 	| '{' '}'
 	| 'CONTAINING' value ;
 
-identifierList: identifier (',' identifier)* ;
+identifierList: IDENITIFIER (',' IDENITIFIER)* ;
 
 xMLBitStringValue: xMLTypedValue | xmlbstring | xMLIdentifierList | ;
 
 xMLIdentifierList: emptyElementList | textList ;
 
-emptyElementList: ('<' identifier '/>')+ ;
+emptyElementList: ('<' IDENITIFIER '/>')+ ;
 
-textList: (identifier)+ ;
+textList: (IDENITIFIER)+ ;
 
 /** Octet string */
 octetStringType: 'OCTET STRING' ;
@@ -372,7 +368,7 @@ extensionAddition: componentType | extensionAdditionGroup ;
 
 extensionAdditionGroup: '[[' versionNumber componentTypeList ']]' ;
 
-versionNumber: number ':' | ;
+versionNumber: NUMBER ':' | ;
 
 componentTypeList: componentType (',' componentType)* ;
 
@@ -404,7 +400,7 @@ xMLDelimitedItemList : (xMLDelimitedItem)+ ;
 
 xMLDelimitedItem
     : '<' nonParameterizedTypeName '>' xMLValue '</' nonParameterizedTypeName '>'
-    | '<' identifier '>' xMLValue '</' identifier '>' ;
+    | '<' IDENITIFIER '>' xMLValue '</' IDENITIFIER '>' ;
 
 setType
 	: 'SET' '{' '}'
@@ -454,11 +450,11 @@ extensionAdditionAlternativesGroup: '[[' versionNumber alternativeTypeList ']]' 
 
 alternativeTypeList: namedType (',' namedType)* ;
 
-choiceValue: identifier ':' value ;
+choiceValue: IDENITIFIER ':' value ;
 
-xMLChoiceValue: '<' identifier '>' xMLValue '</' identifier '>' ;
+xMLChoiceValue: '<' IDENITIFIER '>' xMLValue '</' IDENITIFIER '>' ;
 
-selectionType : identifier '<' type ;
+selectionType : IDENITIFIER '<' type ;
 
 prefixedType : taggedType | encodingPrefixedType ;
 
@@ -474,9 +470,9 @@ taggedType: tag type | tag 'IMPLICIT' type | tag 'EXPLICIT' type ;
 
 tag : '[' encodingReference class classNumber ']' ;
 
-encodingReference : encodingreference ':' | ;
+encodingReference : ENCODINGREFERENCE ':' | ;
 
-classNumber: number | definedValue ;
+classNumber: NUMBER | definedValue ;
 
 class
 	: 'UNIVERSAL'
@@ -492,11 +488,11 @@ objIdComponentsList: (objIdComponents)+;
 
 objIdComponents: nameForm | numberForm | nameAndNumberForm | definedValue ;
 
-nameForm: identifier ;
+nameForm: IDENITIFIER ;
 
-numberForm: number | definedValue ;
+numberForm: NUMBER | definedValue ;
 
-nameAndNumberForm: identifier '(' numberForm ')' ;
+nameAndNumberForm: IDENITIFIER '(' numberForm ')' ;
 
 xMLObjectIdentifierValue : xMLObjIdComponentList ;
 
@@ -504,9 +500,9 @@ xMLObjIdComponentList: xMLObjIdComponent | xMLObjIdComponent '.' xMLObjIdCompone
 
 xMLObjIdComponent: nameForm | xMLNumberForm | xMLNameAndNumberForm ;
 
-xMLNumberForm: number ;
+xMLNumberForm: NUMBER ;
 
-xMLNameAndNumberForm: identifier '(' xMLNumberForm ')' ;
+xMLNameAndNumberForm: IDENITIFIER '(' xMLNumberForm ')' ;
 
 relativeOIDType: 'RELATIVE-OID' ;
 
@@ -556,9 +552,9 @@ xMLExternalValue: xMLSequenceValue ;
 
 timeType: 'TIME' ;
 
-timeValue: tstring ;
+timeValue: TSTRING ;
 
-xMLTimeValue: xmltstring ;
+xMLTimeValue: XMLTSTRING ;
 
 dateType: 'DATE' ;
 
@@ -589,31 +585,31 @@ restrictedCharacterStringType
 	| 'VideotexString'
 	| 'VisibleString' ;
 
-restrictedCharacterStringValue: cstring | characterStringList | quadruple | tuple ;
+restrictedCharacterStringValue: CSTRING | characterStringList | quadruple | tuple ;
 
 characterStringList: '{' charSyms '}' ;
 
 charSyms: charsDefn (',' charsDefn)* ;
 
-charsDefn: cstring | quadruple | tuple | definedValue ;
+charsDefn: CSTRING | quadruple | tuple | definedValue ;
 
 quadruple : '{' group ',' plane ',' row ',' cell '}' ;
 
-group: number ;
+group: NUMBER ;
 
-plane: number ;
+plane: NUMBER ;
 
-row: number ;
+row: NUMBER ;
 
-cell: number ;
+cell: NUMBER ;
 
 tuple : '{' tableColumn ',' tableRow '}' ;
 
-tableColumn: number ;
+tableColumn: NUMBER ;
 
-tableRow: number ;
+tableRow: NUMBER ;
 
-xMLRestrictedCharacterStringValue: xmlcstring ;
+xMLRestrictedCharacterStringValue: XMLCSTRING ;
 
 unrestrictedCharacterStringType: 'CHARACTER STRING' ;
 
@@ -621,7 +617,7 @@ unrestrictedCharacterStringValue: sequenceValue ;
 
 xMLUnrestrictedCharacterStringValue: xMLSequenceValue ;
 
-usefulType: typereference ;
+usefulType: TYPEREFERENCE ;
 
 
 // Constrained types
@@ -724,7 +720,7 @@ partialSpecification: '{' '...' ',' typeConstraints '}' ;
 
 typeConstraints: namedConstraint (',' namedConstraint)* ;
 
-namedConstraint: identifier componentConstraint ;
+namedConstraint: IDENITIFIER componentConstraint ;
 
 componentConstraint: valueConstraint presenceConstraint ;
 
@@ -734,15 +730,15 @@ presenceConstraint: 'PRESENT' | 'ABSENT' | 'OPTIONAL' | ;
 
 patternConstraint: 'PATTERN' value ;
 
-propertySettings: 'SETTINGS' simplestring ;
+propertySettings: 'SETTINGS' SIMPLESTRING ;
 
 propertySettingsList: (propertyAndSettingPair)+ ;
 
 propertyAndSettingPair: propertyName '=' settingName ;
 
-propertyName: psname ;
+propertyName: PSNAME ;
 
-settingName: psname ;
+settingName: PSNAME ;
 
 durationRange: valueRange ;
 
@@ -756,22 +752,22 @@ exceptionIdentification: signedNumber | definedValue | type ':' value ;
 
 // ITU X.681
 // Chapter 8 Referencing definitions
-definedObjectClass: externalObjectClassReference | objectclassreference | usefulObjectClassReference ;
+definedObjectClass: externalObjectClassReference | OBJECTCLASSREFERENCE | usefulObjectClassReference ;
 
-definedObject: externalObjectReference | objectreference ;
+definedObject: externalObjectReference | OBJECTREFERENCE ;
 
-definedObjectSet: externalObjectSetReference | objectsetreference ;
+definedObjectSet: externalObjectSetReference | OBJECTSETREFERENCE ;
 
-externalObjectClassReference: modulereference '.' objectclassreference ;
+externalObjectClassReference: MODULEREFERENCE '.' OBJECTCLASSREFERENCE ;
 
-externalObjectReference: modulereference '.' objectreference ;
+externalObjectReference: MODULEREFERENCE '.' OBJECTREFERENCE ;
 
-externalObjectSetReference: modulereference '.' objectsetreference ;
+externalObjectSetReference: MODULEREFERENCE '.' OBJECTSETREFERENCE ;
 
 usefulObjectClassReference: 'TYPE-IDENTIFIER' | 'ABSTRACT-SYNTAX' ;
 
 // Chapter 9 Information object class definition and assignment
-objectClassAssignment: objectclassreference '::=' objectClass ;
+objectClassAssignment: OBJECTCLASSREFERENCE '::=' objectClass ;
 
 objectClass: definedObjectClass | objectClassDefn | parameterizedObjectClass ;
 
@@ -788,15 +784,15 @@ fieldSpec
 	| objectFieldSpec
 	| objectSetFieldSpec ;
 
-typeFieldSpec: typefieldreference typeOptionalitySpec? ;
+typeFieldSpec: TYPEFIELDREFERENCE typeOptionalitySpec? ;
 
 typeOptionalitySpec: ('OPTIONAL' | 'DEFAULT') type ;
 
-fixedTypeValueFieldSpec: valuefieldreference type 'UNIQUE'? valueOptionalitySpec? ;
+fixedTypeValueFieldSpec: VALUEFIELDREFERENCE type 'UNIQUE'? valueOptionalitySpec? ;
 
 valueOptionalitySpec: ('OPTIONAL' | 'DEFAULT') value ;
 
-variableTypeValueFieldSpec: valuefieldreference fieldName valueOptionalitySpec? ;
+variableTypeValueFieldSpec: VALUEFIELDREFERENCE fieldName valueOptionalitySpec? ;
 
 fixedTypeValueSetFieldSpec: valuesetfieldreference type valueSetOptionalitySpec? ;
 
@@ -804,20 +800,20 @@ valueSetOptionalitySpec: ('OPTIONAL' | 'DEFAULT') valueSet ;
 
 variableTypeValueSetFieldSpec: valuesetfieldreference fieldName valueSetOptionalitySpec? ;
 
-objectFieldSpec: objectfieldreference definedObjectClass objectOptionalitySpec? ;
+objectFieldSpec: OBJECTFIELDREFERENCE definedObjectClass objectOptionalitySpec? ;
 
 objectOptionalitySpec: ('OPTIONAL' | 'DEFAULT') Object ;
 
-objectSetFieldSpec: objectsetfieldreference definedObjectClass objectSetOptionalitySpec? ;
+objectSetFieldSpec: OBJECTSETFIELDREFERENCE definedObjectClass objectSetOptionalitySpec? ;
 
 objectSetOptionalitySpec: ('OPTIONAL' | 'DEFAULT') objectSet ;
 
 primitiveFieldName
-	: typefieldreference
-	| valuefieldreference
+	: TYPEFIELDREFERENCE
+	| VALUEFIELDREFERENCE
 	| valuesetfieldreference
-	| objectfieldreference
-	| objectsetfieldreference ;
+	| OBJECTFIELDREFERENCE
+	| OBJECTSETFIELDREFERENCE ;
 
 fieldName: primitiveFieldName ('.' primitiveFieldName)* ;
 
@@ -830,10 +826,10 @@ optionalGroup: '[' tokenOrGroupSpec (WS tokenOrGroupSpec)* ']' ;
 
 requiredToken: literal | primitiveFieldName ;
 
-literal: word | ',' ;
+literal: WORD | ',' ;
 
 // Chapter 11 Information object definition and assignment
-objectAssignment: objectreference definedObjectClass '::=' object ;
+objectAssignment: OBJECTREFERENCE definedObjectClass '::=' object ;
 
 object: definedObject | objectDefn | objectFromObject | parameterizedObject ;
 
@@ -850,7 +846,7 @@ definedSyntaxToken: literal | setting ;
 setting: type | value | valueSet | object | objectSet ;
 
 // Chapter 12 Information object set definition and assignment
-objectSetAssignment: objectsetreference definedObjectClass '::=' objectSet ;
+objectSetAssignment: OBJECTSETREFERENCE definedObjectClass '::=' objectSet ;
 
 objectSet: '{' objectSetSpec '}' ;
 
@@ -911,9 +907,9 @@ xMLInstanceOfValue: xMLValue ;
 // Chapter 54 Encoding Control Sections
 encodingControlSections : encodingControlSection (WS encodingControlSections)* ;
 
-encodingControlSection: 'ENCODING-CONTROL' encodingreference encodingInstructionAssignmentList ;
+encodingControlSection: 'ENCODING-CONTROL' ENCODINGREFERENCE encodingInstructionAssignmentList ;
 
-encodingInstructionAssignmentList: encodingreference ;
+encodingInstructionAssignmentList: ENCODINGREFERENCE ;
 
 encodingInstruction: encodingReference ;
 
@@ -943,7 +939,7 @@ atNotation: '@' componentIdList | '@' '.' level componentIdList ;
 
 level: '.' level | ;
 
-componentIdList: identifier ('.' identifier)* ;
+componentIdList: IDENITIFIER ('.' IDENITIFIER)* ;
 
 // ITU X.683
 // Chapter 8 Parameterized assignments
@@ -955,17 +951,17 @@ parameterizedAssignment
 	| parameterizedObjectAssignment
 	| parameterizedObjectSetAssignment ;
 
-parameterizedTypeAssignment: typereference parameterList '::=' type ;
+parameterizedTypeAssignment: TYPEREFERENCE parameterList '::=' type ;
 
-parameterizedValueAssignment: valuereference parameterList type '::=' value ;
+parameterizedValueAssignment: VALUEREFERENCE parameterList type '::=' value ;
 
-parameterizedValueSetTypeAssignment: typereference parameterList type '::=' valueSet ;
+parameterizedValueSetTypeAssignment: TYPEREFERENCE parameterList type '::=' valueSet ;
 
-parameterizedObjectClassAssignment: objectclassreference parameterList '::=' objectClass ;
+parameterizedObjectClassAssignment: OBJECTCLASSREFERENCE parameterList '::=' objectClass ;
 
-parameterizedObjectAssignment: objectreference parameterList definedObjectClass '::=' object ;
+parameterizedObjectAssignment: OBJECTREFERENCE parameterList definedObjectClass '::=' object ;
 
-parameterizedObjectSetAssignment: objectsetreference parameterList definedObjectClass '::=' objectSet ;
+parameterizedObjectSetAssignment: OBJECTSETREFERENCE parameterList definedObjectClass '::=' objectSet ;
 
 parameterList: '{' parameter (',' parameter)* '}' ;
 
@@ -984,11 +980,11 @@ parameterizedReference: reference | reference '{' '}' ;
 
 parameterizedType: simpleDefinedType actualParameterList ;
 
-simpleDefinedType: externalTypeReference | typereference ;
+simpleDefinedType: externalTypeReference | TYPEREFERENCE ;
 
 parameterizedValue: simpleDefinedValue actualParameterList ;
 
-simpleDefinedValue: externalValueReference | valuereference ;
+simpleDefinedValue: externalValueReference | VALUEREFERENCE ;
 
 parameterizedValueSetType: simpleDefinedType actualParameterList ;
 
@@ -1171,4 +1167,14 @@ OBJECTFIELDREFERENCE: '&' OBJECTREFERENCE ;
 OBJECTSETFIELDREFERENCE: '&' OBJECTSETREFERENCE ;
 
 WORD: TYPEREFERENCE ;
-s
+
+// ITU 680
+TAGDEFAULT: 'EXPLICIT TAGS' | 'IMPLICIT TAGS' | 'AUTOMATIC TAGS' | ;
+
+EXTENSIONDEFAULT: 'EXTENSIBILITY IMPLIED' | ;
+
+
+// TODO: value definition
+// TODO: type definition
+
+
