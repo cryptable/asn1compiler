@@ -998,8 +998,15 @@ actualParameterList: '{' actualParameter (',' actualParameter)* '}' ;
 
 actualParameter: type | value | valueSet | definedObjectClass | object | objectSet ;
 
+// ITU 680
+TAGDEFAULT: 'EXPLICIT TAGS' | 'IMPLICIT TAGS' | 'AUTOMATIC TAGS' | ;
+
+EXTENSIONDEFAULT: 'EXTENSIBILITY IMPLIED' | ;
+
 // Lexer
 // -----
+
+
 WS : [\t\n\0x11\0x12\r ] ;
 NEWLINE: [\n\0x11\0x12\r] ;
 LETTER: [a-zA-Z] ;
@@ -1168,10 +1175,6 @@ OBJECTSETFIELDREFERENCE: '&' OBJECTSETREFERENCE ;
 
 WORD: TYPEREFERENCE ;
 
-// ITU 680
-TAGDEFAULT: 'EXPLICIT TAGS' | 'IMPLICIT TAGS' | 'AUTOMATIC TAGS' | ;
-
-EXTENSIONDEFAULT: 'EXTENSIBILITY IMPLIED' | ;
 
 
 // TODO: value definition
