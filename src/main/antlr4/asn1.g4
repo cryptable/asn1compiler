@@ -1,31 +1,31 @@
 grammar asn1;
 
 moduleDefinition: moduleIdentifier
-	  'DEFINITIONS'
+	  DEFINITIONS
 	  encodingReferenceDefault
 	  TAGDEFAULT
 	  EXTENSIONDEFAULT
-	  '::='
-	  'BEGIN'
+	  EQUALS
+	  BEGIN
 	  moduleBody
 	  encodingControlSections
-	  'END';
+	  END;
 
 moduleIdentifier: MODULEREFERENCE definitiveIdentification;
 
 definitiveIdentification: definitiveOID | definitiveOIDandIRI | ;
 
-definitiveOID: '{' definitiveObjIdComponentList '}';
+definitiveOID: OPENACCOL definitiveObjIdComponentList CLOSEACCOL;
 
 definitiveOIDandIRI: definitiveOID iRIValue;
 
 definitiveObjIdComponentList: (definitiveObjIdComponent)+ ;
 
-definitiveObjIdComponent: nameForm | definitiveNumberForm | definitiveNameAndNumberForm;
+definitiveObjIdComponent: nameForm | definitiveNumberForm | definitiveNameAndNumberForm ;
 
 definitiveNumberForm : NUMBER;
 
-definitiveNameAndNumberForm: IDENTIFIER '(' definitiveNumberForm ')';
+definitiveNameAndNumberForm: IDENTIFIER OPENPAR definitiveNumberForm CLOSEPAR;
 
 encodingReferenceDefault: ENCODINGREFERENCE 'INSTRUCTIONS' | ;
 
@@ -91,7 +91,7 @@ xMLTypedValue
 
 valueSetTypeAssignment: TYPEREFERENCE type '::=' valueSet ;
 
-valueSet: '{' elementSetSpecs '}' ;
+valueSet: OPENACCOL elementSetSpecs CLOSEACCOL ;
 
 type: builtinType | referencedType | constrainedType ;
 
@@ -218,13 +218,13 @@ textBoolean
 /** Integer type */
 integerType
 	: INTEGER
-	| INTEGER '{' NamedNumberList '}' ;
+	| INTEGER OPENACCOL NamedNumberList CLOSEACCOL ;
 
 namedNumberList: namedNumber (',' namedNumber)* ;
 
 namedNumber
-	: IDENITIFIER '(' signedNumber ')'
-	| IDENITIFIER '(' definedValue ')' ;
+	: IDENITIFIER OPENPAR signedNumber CLOSEPAR
+	| IDENITIFIER OPENPAR definedValue CLOSEPAR ;
 
 signedNumber: '-'? NUMBER ;
 
@@ -244,7 +244,7 @@ emptyElementInteger: '<' IDENITIFIER '/>' ;
 textInteger: IDENITIFIER ;
 
 /** Enumeration Type */
-enumeratedType: ENUMERATED '{' enumerations '}' ;
+enumeratedType: ENUMERATED OPENACCOL enumerations CLOSEACCOL ;
 
 enumerations
 	: rootEnumeration
@@ -299,22 +299,22 @@ textReal
 	| 'NaN' ;
 
 /** Bitstring type */
-bitStringType: 'BIT STRING' | 'BIT STRING' '{' namedBitList '}' ;
+bitStringType: 'BIT STRING' | 'BIT STRING' OPENACCOL namedBitList CLOSEACCOL ;
 
 namedBitList: namedBit (',' namedBit)* ;
 
-namedBit: IDENITIFIER '(' NUMBER ')' | IDENITIFIER '(' definedValue ')' ;
+namedBit: IDENITIFIER OPENPAR NUMBER CLOSEPAR | IDENITIFIER OPENPAR definedValue CLOSEPAR ;
 
 bitStringValue
-	: bstring
-	| hstring
-	| '{' identifierList '}'
-	| '{' '}'
+	: BSTRING
+	| HSTRING
+	| OPENACCOL identifierList CLOSEACCOL
+	| OPENACCOL CLOSEACCOL
 	| 'CONTAINING' value ;
 
 identifierList: IDENITIFIER (',' IDENITIFIER)* ;
 
-xMLBitStringValue: xMLTypedValue | xmlbstring | xMLIdentifierList | ;
+xMLBitStringValue: xMLTypedValue | XMLBSTRING | xMLIdentifierList | ;
 
 xMLIdentifierList: emptyElementList | textList ;
 
@@ -326,11 +326,11 @@ textList: (IDENITIFIER)+ ;
 octetStringType: 'OCTET STRING' ;
 
 octetStringValue
-	: bstring
-	| hstring
+	: BSTRING
+	| HSTRING
 	| 'CONTAINING' value ;
 
-xMLOctetStringValue: xMLTypedValue | xmlhstring ;
+xMLOctetStringValue: xMLTypedValue | XMLHSTRING ;
 
 /** Null type */
 nullType: 'NULL' ;
@@ -341,9 +341,9 @@ xMLNullValue: ;
 
 /** Sequence type */
 sequenceType
-    : 'SEQUENCE' '{' '}'
-    | 'SEQUENCE' '{' extensionAndException optionalExtensionMarker '}'
-    | 'SEQUENCE' '{' componentTypeLists '}' ;
+    : 'SEQUENCE' OPENACCOL CLOSEACCOL
+    | 'SEQUENCE' OPENACCOL extensionAndException optionalExtensionMarker CLOSEACCOL
+    | 'SEQUENCE' OPENACCOL componentTypeLists CLOSEACCOL ;
 
 extensionAndException: '...' | '...' exceptionSpec ;
 
@@ -374,7 +374,7 @@ componentTypeList: componentType (',' componentType)* ;
 
 componentType: namedType | namedType 'OPTIONAL' | namedType 'DEFAULT' value | 'COMPONENTS OF' type ;
 
-sequenceValue: '{' componentValueList '}' | '{' '}' ;
+sequenceValue: OPENACCOL componentValueList CLOSEACCOL | OPENACCOL CLOSEACCOL ;
 
 componentValueList: namedValue (',' namedValue)* ;
 
@@ -384,7 +384,7 @@ xMLComponentValueList: (xMLNamedValue)+ ;
 
 sequenceOfType: 'SEQUENCE OF' type | 'SEQUENCE OF' namedType ;
 
-sequenceOfValue: '{' valueList '}' | '{' namedValueList '}' | '{' '}' ;
+sequenceOfValue: OPENACCOL valueList CLOSEACCOL | OPENACCOL namedValueList CLOSEACCOL | OPENACCOL CLOSEACCOL ;
 
 valueList: value (',' value)* ;
 
@@ -403,13 +403,13 @@ xMLDelimitedItem
     | '<' IDENITIFIER '>' xMLValue '</' IDENITIFIER '>' ;
 
 setType
-	: 'SET' '{' '}'
-	| 'SET' '{' extensionAndException optionalExtensionMarker '}'
-	| 'SET' '{' componentTypeLists '}' ;
+	: 'SET' OPENACCOL CLOSEACCOL
+	| 'SET' OPENACCOL extensionAndException optionalExtensionMarker CLOSEACCOL
+	| 'SET' OPENACCOL componentTypeLists CLOSEACCOL ;
 
 setValue
-	: '{' componentValueList '}'
-	| '{' '}' ;
+	: OPENACCOL componentValueList CLOSEACCOL
+	| OPENACCOL CLOSEACCOL ;
 
 xMLSetValue
 	: xMLComponentValueList
@@ -420,9 +420,9 @@ setOfType
 	| 'SET OF' namedType ;
 
 setOfValue
-	: '{' valueList '}'
-	| '{' namedValueList '}'
-	| '{' '}' ;
+	: OPENACCOL valueList CLOSEACCOL
+	| OPENACCOL namedValueList CLOSEACCOL
+	| OPENACCOL CLOSEACCOL ;
 
 xMLSetOfValue
 	: xMLValueList
@@ -430,7 +430,7 @@ xMLSetOfValue
 	| ;
 
 choiceType
-	: 'CHOICE' '{' alternativeTypeLists '}' ;
+	: 'CHOICE' OPENACCOL alternativeTypeLists CLOSEACCOL ;
 
 alternativeTypeLists
 	: rootAlternativeTypeList
@@ -482,7 +482,7 @@ class
 
 objectIdentifierType : 'OBJECT IDENTIFIER' ;
 
-objectIdentifierValue: '{' objIdComponentsList '}' | '{' definedValue objIdComponentsList '}' ;
+objectIdentifierValue: OPENACCOL objIdComponentsList CLOSEACCOL | OPENACCOL definedValue objIdComponentsList CLOSEACCOL ;
 
 objIdComponentsList: (objIdComponents)+;
 
@@ -492,7 +492,7 @@ nameForm: IDENITIFIER ;
 
 numberForm: NUMBER | definedValue ;
 
-nameAndNumberForm: IDENITIFIER '(' numberForm ')' ;
+nameAndNumberForm: IDENITIFIER OPENPAR numberForm CLOSEPAR ;
 
 xMLObjectIdentifierValue : xMLObjIdComponentList ;
 
@@ -502,11 +502,11 @@ xMLObjIdComponent: nameForm | xMLNumberForm | xMLNameAndNumberForm ;
 
 xMLNumberForm: NUMBER ;
 
-xMLNameAndNumberForm: IDENITIFIER '(' xMLNumberForm ')' ;
+xMLNameAndNumberForm: IDENITIFIER OPENPAR xMLNumberForm CLOSEPAR ;
 
 relativeOIDType: 'RELATIVE-OID' ;
 
-relativeOIDValue: '{' relativeOIDComponentsList '}' ;
+relativeOIDValue: OPENACCOL relativeOIDComponentsList CLOSEACCOL ;
 
 relativeOIDComponentsList: (relativeOIDComponents)+ ;
 
@@ -526,7 +526,7 @@ firstArcIdentifier: '/' arcIdentifier ;
 
 subsequentArcIdentifier : '/' arcIdentifier subsequentArcIdentifier | ;
 
-arcIdentifier: integerUnicodeLabel | nonintegerUnicodeLabel ;
+arcIdentifier: INTEGERUNICODELABEL | NONINTEGERUNICODELABEL ;
 
 xMLIRIValue: firstArcIdentifier subsequentArcIdentifier ;
 
@@ -587,13 +587,13 @@ restrictedCharacterStringType
 
 restrictedCharacterStringValue: CSTRING | characterStringList | quadruple | tuple ;
 
-characterStringList: '{' charSyms '}' ;
+characterStringList: OPENACCOL charSyms CLOSEACCOL ;
 
 charSyms: charsDefn (',' charsDefn)* ;
 
 charsDefn: CSTRING | quadruple | tuple | definedValue ;
 
-quadruple : '{' group ',' plane ',' row ',' cell '}' ;
+quadruple : OPENACCOL group ',' plane ',' row ',' cell CLOSEACCOL ;
 
 group: NUMBER ;
 
@@ -603,7 +603,7 @@ row: NUMBER ;
 
 cell: NUMBER ;
 
-tuple : '{' tableColumn ',' tableRow '}' ;
+tuple : OPENACCOL tableColumn ',' tableRow CLOSEACCOL ;
 
 tableColumn: NUMBER ;
 
@@ -635,7 +635,7 @@ typeWithConstraint
 	| 'SEQUENCE' constraint 'OF' namedType
 	| 'SEQUENCE' sizeConstraint 'OF' namedType ;
 
-constraint: '(' constraintSpec exceptionSpec ')' ;
+constraint: OPENPAR constraintSpec exceptionSpec CLOSEPAR ;
 
 constraintSpec: subtypeConstraint | generalConstraint ;
 
@@ -670,7 +670,7 @@ unionMark: '|' | 'UNION' ;
 
 intersectionMark: '^' | 'INTERSECTION' ;
 
-elements: subtypeElements | objectSetElements | '(' elementSetSpec ')' ;
+elements: subtypeElements | objectSetElements | OPENPAR elementSetSpec CLOSEPAR ;
 
 subtypeElements
 	: singleValue
@@ -714,9 +714,9 @@ singleTypeConstraint: constraint ;
 
 multipleTypeConstraints: fullSpecification | partialSpecification ;
 
-fullSpecification: '{' typeConstraints '}' ;
+fullSpecification: OPENACCOL typeConstraints CLOSEACCOL ;
 
-partialSpecification: '{' '...' ',' typeConstraints '}' ;
+partialSpecification: OPENACCOL '...' ',' typeConstraints CLOSEACCOL ;
 
 typeConstraints: namedConstraint (',' namedConstraint)* ;
 
@@ -771,7 +771,7 @@ objectClassAssignment: OBJECTCLASSREFERENCE '::=' objectClass ;
 
 objectClass: definedObjectClass | objectClassDefn | parameterizedObjectClass ;
 
-objectClassDefn: 'CLASS' '{' fieldSpec (',' fieldSpec)* '}' withSyntaxSpec? ;
+objectClassDefn: 'CLASS' OPENACCOL fieldSpec (',' fieldSpec)* CLOSEACCOL withSyntaxSpec? ;
 
 withSyntaxSpec: 'WITH SYNTAX' syntaxList ;
 
@@ -794,11 +794,11 @@ valueOptionalitySpec: ('OPTIONAL' | 'DEFAULT') value ;
 
 variableTypeValueFieldSpec: VALUEFIELDREFERENCE fieldName valueOptionalitySpec? ;
 
-fixedTypeValueSetFieldSpec: valuesetfieldreference type valueSetOptionalitySpec? ;
+fixedTypeValueSetFieldSpec: VALUESETFIELDREFERENCE type valueSetOptionalitySpec? ;
 
 valueSetOptionalitySpec: ('OPTIONAL' | 'DEFAULT') valueSet ;
 
-variableTypeValueSetFieldSpec: valuesetfieldreference fieldName valueSetOptionalitySpec? ;
+variableTypeValueSetFieldSpec: VALUESETFIELDREFERENCE fieldName valueSetOptionalitySpec? ;
 
 objectFieldSpec: OBJECTFIELDREFERENCE definedObjectClass objectOptionalitySpec? ;
 
@@ -811,14 +811,14 @@ objectSetOptionalitySpec: ('OPTIONAL' | 'DEFAULT') objectSet ;
 primitiveFieldName
 	: TYPEFIELDREFERENCE
 	| VALUEFIELDREFERENCE
-	| valuesetfieldreference
+	| VALUESETFIELDREFERENCE
 	| OBJECTFIELDREFERENCE
 	| OBJECTSETFIELDREFERENCE ;
 
 fieldName: primitiveFieldName ('.' primitiveFieldName)* ;
 
 // chapter 10 Syntax List
-syntaxList: '{' tokenOrGroupSpec (WS tokenOrGroupSpec)* '}' ;
+syntaxList: OPENACCOL tokenOrGroupSpec (WS tokenOrGroupSpec)* CLOSEACCOL ;
 
 tokenOrGroupSpec: requiredToken | optionalGroup ;
 
@@ -835,11 +835,11 @@ object: definedObject | objectDefn | objectFromObject | parameterizedObject ;
 
 objectDefn: defaultSyntax | definedSyntax ;
 
-defaultSyntax: '{' fieldSetting (',' fieldSetting)* '}' ;
+defaultSyntax: OPENACCOL fieldSetting (',' fieldSetting)* CLOSEACCOL ;
 
 fieldSetting: primitiveFieldName setting ;
 
-definedSyntax: '{' definedSyntaxToken (WS definedSyntaxToken)* '}' ;
+definedSyntax: OPENACCOL definedSyntaxToken (WS definedSyntaxToken)* CLOSEACCOL ;
 
 definedSyntaxToken: literal | setting ;
 
@@ -848,7 +848,7 @@ setting: type | value | valueSet | object | objectSet ;
 // Chapter 12 Information object set definition and assignment
 objectSetAssignment: OBJECTSETREFERENCE definedObjectClass '::=' objectSet ;
 
-objectSet: '{' objectSetSpec '}' ;
+objectSet: OPENACCOL objectSetSpec CLOSEACCOL ;
 
 objectSetSpec
 	: rootElementSetSpec
@@ -870,7 +870,7 @@ fixedTypeFieldVal: builtinValue | referencedValue ;
 
 xMLObjectClassFieldValue: xMLOpenTypeFieldVal | xMLFixedTypeFieldVal ;
 
-xMLOpenTypeFieldVal: xMLTypedValue | xmlhstring ;
+xMLOpenTypeFieldVal: xMLTypedValue | XMLHSTRING ;
 
 xMLFixedTypeFieldVal: xMLBuiltinValue ;
 
@@ -919,7 +919,7 @@ generalConstraint: userDefinedConstraint | tableConstraint | contentsConstraint 
 contentsConstraint: type ;
 
 // Chapter 9 User-defined constraints
-userDefinedConstraint: 'CONSTRAINED BY' '{' userDefinedConstraintParameter (',' userDefinedConstraintParameter)* '}' ;
+userDefinedConstraint: 'CONSTRAINED BY' OPENACCOL userDefinedConstraintParameter (',' userDefinedConstraintParameter)* CLOSEACCOL ;
 
 userDefinedConstraintParameter
 	: governor ':' value
@@ -933,7 +933,7 @@ tableConstraint: simpleTableConstraint | componentRelationConstraint ;
 
 simpleTableConstraint: objectSet ;
 
-componentRelationConstraint: '{' definedObjectSet '}' '{' atNotation (',' atNotation)* '}' ;
+componentRelationConstraint: OPENACCOL definedObjectSet CLOSEACCOL OPENACCOL atNotation (',' atNotation)* CLOSEACCOL ;
 
 atNotation: '@' componentIdList | '@' '.' level componentIdList ;
 
@@ -963,7 +963,7 @@ parameterizedObjectAssignment: OBJECTREFERENCE parameterList definedObjectClass 
 
 parameterizedObjectSetAssignment: OBJECTSETREFERENCE parameterList definedObjectClass '::=' objectSet ;
 
-parameterList: '{' parameter (',' parameter)* '}' ;
+parameterList: OPENACCOL parameter (',' parameter)* CLOSEACCOL ;
 
 parameter: paramGovernor ':' (dummyReference | dummyReference) ;
 
@@ -976,7 +976,7 @@ dummyGovernor: dummyReference ;
 dummyReference: reference ;
 
 // Chapter 9 Referencing parameterized definitions
-parameterizedReference: reference | reference '{' '}' ;
+parameterizedReference: reference | reference OPENACCOL CLOSEACCOL ;
 
 parameterizedType: simpleDefinedType actualParameterList ;
 
@@ -994,7 +994,7 @@ parameterizedObjectSet: definedObjectSet actualParameterList ;
 
 parameterizedObject: definedObject actualParameterList ;
 
-actualParameterList: '{' actualParameter (',' actualParameter)* '}' ;
+actualParameterList: OPENACCOL actualParameter (',' actualParameter)* CLOSEACCOL ;
 
 actualParameter: type | value | valueSet | definedObjectClass | object | objectSet ;
 
@@ -1013,8 +1013,8 @@ HEX: [0-9A-F] ;
 XMLHEX: [0-9A-Fa-f] ;
 CSTRINGCHAR: ~[\"] ;
 XMLCHARACTER: [\x09\x10\x13\x0020-\xD7FF\xE000-\xFFFD\x010000-\x10FFFF] ;
-XMLCHARCODES: '&#' Number* ';' ;
-XMLCHARHEXCODES: '&#x' XMLHex* ';' ;
+XMLCHARCODES: '&#' NUMBER* ';' ;
+XMLCHARHEXCODES: '&#x' XMLHEX* ';' ;
 XMLCHARAMPCODES: '&amp;' | '&lt;' | '&gt;' ;
 XMLCHARXMLCODES
 	: '<nul/>' | '<soh/>' | '<stx/>' | '<etx/>' | '<eot/>' | '<enq/>' | '<ack/>' | '<bel/>' | '<bs/>'
@@ -1049,10 +1049,10 @@ UNICODENONINTEGER
 	| [\x000E1000-\x000EFFFD] ;
 
 // chapter 12.2 Type references
-TYPEREFERENCE: UpperCase (AlphaNumeric | '-' AlphaNumeric)* ;
+TYPEREFERENCE: UPPERCASE (ALPHANUMERIC | '-' ALPHANUMERIC)* ;
 
 // chapter 12.3 Identifiers
-IDENTIFIER: LowerCase (AlphaNumeric | '-' AlphaNumeric)* ;
+IDENTIFIER: LOWERCASE (ALPHANUMERIC | '-' ALPHANUMERIC)* ;
 
 // chapter 12.4 Value references
 VALUEREFERENCE: IDENTIFIER ;
@@ -1173,8 +1173,11 @@ TAGDEFAULT: 'EXPLICIT TAGS' | 'IMPLICIT TAGS' | 'AUTOMATIC TAGS' | ;
 
 EXTENSIONDEFAULT: 'EXTENSIBILITY IMPLIED' | ;
 
-
-// TODO: value definition
-// TODO: type definition
-
-
+DEFINITIONS: 'DEFINITIONS' ;
+EQUALS: '::=' ;
+BEGIN: 'BEGIN' ;
+END: 'END' ;
+OPENACCOL: '{' ;
+CLOSEACCOL: '}' ;
+OPENPAR: '(' ;
+CLOSEPAR: ')' ;
