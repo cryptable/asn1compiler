@@ -1,4 +1,4 @@
-grammar asn1;
+lexer grammar asn1lexical;
 
 // ITU 680
 
@@ -60,7 +60,7 @@ ASN_CHARACTER_SET
     | VERTICAL_LINE
     | RIGHT_CURLY_BRACKET ;
 
-LETTER: CAPITALS | SMALL ;
+LETTER: CAPITAL | SMALL ;
 ALPHANUMERIC: [a-zA-Z0-9] ;
 NONZERO: [1-9] ;
 BIT: [01] ;
@@ -109,12 +109,12 @@ XMLHSTRING: XMLHEX+ ;
 
 // chapter 12.14 Character strings
 // TODO: extend further according to ISO/IEC 8824
-CSTRING: ('"' CSTRINGCHAR+ '"')+;
+// CSTRING: ('"' CSTRINGCHAR+ '"')+;
 
 // chapter 12.15 XML character string item
 XMLCHARACTER: [\x09\x10\x13\x0020-\xD7FF\xE000-\xFFFD\x010000-\x10FFFF] ;
-XMLCHARCODES: '&#' Number* ';' ;
-XMLCHARHEXCODES: '&#x' XMLHex* ';' ;
+XMLCHARCODES: '&#' NUMBER* ';' ;
+XMLCHARHEXCODES: '&#x' XMLHEX* ';' ;
 XMLCHARAMPCODES: '&amp;' | '&lt;' | '&gt;' ;
 XMLCHARXMLCODES
 	: '<nul/>' | '<soh/>' | '<stx/>' | '<etx/>' | '<eot/>' | '<enq/>' | '<ack/>' | '<bel/>' | '<bs/>'
