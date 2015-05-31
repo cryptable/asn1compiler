@@ -797,12 +797,12 @@ timePointRange: valueRange ;
 
 recurrenceRange: valueRange ;
 
-exceptionSpec: EXCLAMATION exceptionIdentification | ;
+exceptionSpec: EXCLAMATION exceptionIdentification | EMPTY;
 
 exceptionIdentification: signedNumber | definedValue | type COLON value ;
 
 // Chapter 54 Encoding Control Sections
-encodingControlSections : encodingControlSection (WS encodingControlSections)* ;
+encodingControlSections : (encodingControlSection)+ | EMPTY;
 
 encodingControlSection: 'ENCODING-CONTROL' ENCODINGREFERENCE encodingInstructionAssignmentList ;
 

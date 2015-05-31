@@ -1,5 +1,15 @@
 grammar Asn1Lexical;
 
+// chapter 12.6 Comments
+COMMENT
+	: (COMMENT_DASHES (ASN_CHARACTER_SET | ' ' | '\t')* COMMENT_DASHES
+	| COMMENT_DASHES (ASN_CHARACTER_SET | ' ' | '\t')* NEWLINE
+    | BEGIN_COMMENT (ASN_CHARACTER_SET | WS)* END_COMMENT) -> skip;
+
+// chapter 12.1 General Rules
+WS : ('\t' | '\n' | '\u0011' | '\u0012' | '\r' | ' ') -> skip;
+NEWLINE: ('\n' | '\u0011' | '\u0012' | '\r') -> skip ;
+
 // Fixed Lexicons
 // Used lexical definitions in the parser
 // chapter 12.38
@@ -237,13 +247,13 @@ LEFT_VERSION_BRACKET: '[[' ;
 RIGHT_VERSION_BRACKET: ']]' ;
 
 // Comment --
-COMMENT_DASHES: '--' ;
+fragment COMMENT_DASHES: '--' ;
 
 // Begin comment /*
-BEGIN_COMMENT: '/*' ;
+fragment BEGIN_COMMENT: '/*' ;
 
 // End comment */
-END_COMMENT: '*/' ;
+fragment END_COMMENT: '*/' ;
 
 // General lexicons
 fragment CAPITAL: [A-Z] ;
@@ -310,10 +320,6 @@ fragment BIT: [01] ;
 fragment HEX: [0-9A-F] ;
 fragment XMLHEX: [0-9A-Fa-f] ;
 
-// chapter 12.1 General Rules
-WS : ('\t' | '\n' | '\u0011' | '\u0012' | '\r' | ' ') -> skip;
-NEWLINE: ('\n' | '\u0011' | '\u0012' | '\r') -> skip ;
-
 // chapter 12.2 Type references
 TYPEREFERENCE: CAPITAL (ALPHANUMERIC | '-' ALPHANUMERIC)* ;
 
@@ -325,12 +331,6 @@ valuereference: IDENTIFIER ;
 
 // chapter 12.5 Module references
 modulereference: TYPEREFERENCE ;
-
-// chapter 12.6 Comments
-COMMENT
-	: (COMMENT_DASHES [ASN_CHARACTER_SET]* NEWLINE
-	| COMMENT_DASHES [ASN_CHARACTER_SET]* COMMENT_DASHES
-	| BEGIN_COMMENT [ASN_CHARACTER_SET]* END_COMMENT) -> skip;
 
 // chapter 12.7 Empty
 EMPTY: ;
@@ -359,7 +359,7 @@ CSTRINGCHAR: ~[\"] ;
 CSTRING: ('"' CSTRINGCHAR+ '"')+;
 
 // chapter 12.15 XML character string item
-XMLCHARACTER: [\x09\x10\x13\x0020-\xD7FF\xE000-\xFFFD\x010000-\x10FFFF] ;
+XMLCHARACTER: [\u0009\u0010\u0013\u0020-\uD7FF\uE000-\uFFFD\u010000-\u10FFFF] ;
 XMLCHARCODES: '&#' NUMBER* ';' ;
 XMLCHARHEXCODES: '&#x' XMLHEX* ';' ;
 XMLCHARAMPCODES: '&amp;' | '&lt;' | '&gt;' ;
@@ -368,10 +368,10 @@ XMLCHARXMLCODES
 	| '<vt/>' | '<ff/>' | '<so/>' | '<si/>' | '<dle/>' | '<dc1/>' | '<dc2/>' | '<dc3/>' | '<dc4/>' | '<nak/>'
 	| '<syn/>' | '<etb/>' | '<can/>' | '<em/>' | '<sub/>' | '<esc/>' | '<is4/>' | '<is3/>' | '<is2/>' | '<is1/>' ;
 
-XMLCSTRING: (XMLCHARACTER | XMLCHARCODES | XMLCHARHEXCODES | XMLCHARAMPCODES | XMLCHARXMLCODES)+;
+// XMLCSTRING: (XMLCHARACTER | XMLCHARCODES | XMLCHARHEXCODES | XMLCHARAMPCODES | XMLCHARXMLCODES)+;
 
 // chapter 12.16 Simple string item
-SIMPLESTRINGCODES: [\x32-\x7E] ;
+fragment SIMPLESTRINGCODES: [\u0032-\u007E] ;
 
 SIMPLESTRING: '"' SIMPLESTRINGCODES+ '"' ;
 
@@ -381,7 +381,7 @@ TSTRINGCHARACTER: [0-9+-:.,/CDHMRPSTWYZ] ;
 TSTRING: '"' TSTRINGCHARACTER+ '"' ;
 
 // chapter 12.18 XML Time string item
-XMLTSTRING: TSTRINGCHARACTER+ ;
+// XMLTSTRING: TSTRINGCHARACTER+ ;
 
 // chapter 12.19 property and settings name lexical item
 PSNAME: CAPITAL (ALPHANUMERIC | '-' ALPHANUMERIC)* ;
