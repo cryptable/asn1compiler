@@ -5,7 +5,7 @@ import Asn1Lexical;
 moduleDefinition: moduleIdentifier
 	  DEFINITIONS
 	  encodingReferenceDefault
-	  tagDefault
+	  TagDefault
 	  extensionDefault
 	  ASSIGNMENT
 	  BEGIN
@@ -30,12 +30,6 @@ definitiveNumberForm : NUMBER;
 definitiveNameAndNumberForm: IDENTIFIER LEFT_PARENTHESIS definitiveNumberForm RIGHT_PARENTHESIS;
 
 encodingReferenceDefault: ENCODINGREFERENCE INSTRUCTIONS | EMPTY ;
-
-tagDefault
-	: EXPLICIT_TAGS
-	| IMPLICIT_TAGS
-	| AUTOMATIC_TAGS
-	| EMPTY ;
 
 extensionDefault : EXTENSIBILITY_IMPLIED | EMPTY ;
 
