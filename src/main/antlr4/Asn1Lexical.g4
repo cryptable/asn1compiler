@@ -1,16 +1,6 @@
 grammar Asn1Lexical;
 
-// chapter 12.6 Comments
-COMMENT
-	: (COMMENT_DASHES (ASN_CHARACTER_SET | ' ' | '\t')* COMMENT_DASHES
-	| COMMENT_DASHES (ASN_CHARACTER_SET | ' ' | '\t')* NEWLINE
-    | BEGIN_COMMENT (ASN_CHARACTER_SET | WS)* END_COMMENT) -> skip;
-
-// chapter 12.1 General Rules
-WS : ('\t' | '\n' | '\u0011' | '\u0012' | '\r' | ' ') -> skip;
-NEWLINE: ('\n' | '\u0011' | '\u0012' | '\r') -> skip ;
-
-// Fixed Lexicons
+// Static Lexicons
 // Used lexical definitions in the parser
 // chapter 12.38
 
@@ -133,6 +123,7 @@ DATE_TIME: 'DATE-TIME' ;
 
 DURATION: 'DURATION' ;
 
+/*
 BMPString: 'BMPString' ;
 
 GeneralString: 'GeneralString' ;
@@ -158,6 +149,7 @@ UTF8String: 'UTF8String' ;
 VideotexString: 'VideotexString' ;
 
 VisibleString: 'VisibleString' ;
+*/
 
 CHARACTER_STRING: 'CHARACTER STRING' ;
 
@@ -246,6 +238,7 @@ LEFT_VERSION_BRACKET: '[[' ;
 // chapter 12.24 Right version brackets
 RIGHT_VERSION_BRACKET: ']]' ;
 
+// chapter 12.6 Comments
 // Comment --
 fragment COMMENT_DASHES: '--' ;
 
@@ -254,36 +247,6 @@ fragment BEGIN_COMMENT: '/*' ;
 
 // End comment */
 fragment END_COMMENT: '*/' ;
-
-// General lexicons
-fragment CAPITAL: [A-Z] ;
-fragment SMALL: [a-z] ;
-fragment DIGIT: [0-9] ;
-EXCLAMATION: '!' ;
-QUOTATION: '"' ;
-AMPERSAND: '&' ;
-fragment APOSTROPHE: '\'' ;
-LEFT_PARENTHESIS: '(' ;
-RIGHT_PARENTHESIS: ')' ;
-ASTERISK: '*' ;
-COMMA: ',' ;
-HYPHEN_MINUS: '-' ;
-FULL_STOP: '.' ;
-SOLIDUS: '/' ;
-COLON: ':' ;
-SEMICOLON: ';' ;
-LESS_THAN_SIGN: '<' ;
-EQUALS_SIGN: '=' ;
-GREATER_THAN_SIGN: '>' ;
-COMMERCIAL_AT: '@' ;
-LEFT_SQUARE_BRACKET: '[' ;
-RIGHT_SQUARE_BRACKET: ']' ;
-CIRCUMFLEX_ACCENT: '^' ;
-fragment LOW_LINE: '_' ;
-LEFT_CURLY_BRACKET: '{' ;
-VERTICAL_LINE: '|' ;
-RIGHT_CURLY_BRACKET: '}' ;
-
 fragment ASN_CHARACTER_SET
     : CAPITAL
     | SMALL
@@ -313,6 +276,44 @@ fragment ASN_CHARACTER_SET
     | VERTICAL_LINE
     | RIGHT_CURLY_BRACKET ;
 
+COMMENT
+	: (COMMENT_DASHES (ASN_CHARACTER_SET | ' ' | '\t')* COMMENT_DASHES
+	| COMMENT_DASHES (ASN_CHARACTER_SET | ' ' | '\t')* NEWLINE
+    | BEGIN_COMMENT (ASN_CHARACTER_SET | WS)* END_COMMENT) -> skip;
+
+// chapter 12.1 General Rules
+WS : ('\t' | '\n' | '\u0011' | '\u0012' | '\r' | ' ') -> skip;
+NEWLINE: ('\n' | '\u0011' | '\u0012' | '\r') -> skip ;
+
+EXCLAMATION: '!' ;
+QUOTATION: '"' ;
+AMPERSAND: '&' ;
+APOSTROPHE: '\'' ;
+LEFT_PARENTHESIS: '(' ;
+RIGHT_PARENTHESIS: ')' ;
+ASTERISK: '*' ;
+COMMA: ',' ;
+HYPHEN_MINUS: '-' ;
+FULL_STOP: '.' ;
+SOLIDUS: '/' ;
+COLON: ':' ;
+SEMICOLON: ';' ;
+LESS_THAN_SIGN: '<' ;
+EQUALS_SIGN: '=' ;
+GREATER_THAN_SIGN: '>' ;
+COMMERCIAL_AT: '@' ;
+LEFT_SQUARE_BRACKET: '[' ;
+RIGHT_SQUARE_BRACKET: ']' ;
+CIRCUMFLEX_ACCENT: '^' ;
+LOW_LINE: '_' ;
+LEFT_CURLY_BRACKET: '{' ;
+VERTICAL_LINE: '|' ;
+RIGHT_CURLY_BRACKET: '}' ;
+
+// General lexicons
+fragment CAPITAL: [A-Z] ;
+fragment SMALL: [a-z] ;
+fragment DIGIT: [0-9] ;
 fragment LETTER: CAPITAL | SMALL ;
 fragment ALPHANUMERIC: [a-zA-Z0-9] ;
 fragment NONZERO: [1-9] ;

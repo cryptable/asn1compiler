@@ -15,7 +15,7 @@ moduleDefinition: moduleIdentifier
 
 moduleIdentifier: modulereference definitiveIdentification;
 
-definitiveIdentification: definitiveOID | definitiveOIDandIRI | EMPTY ;
+definitiveIdentification: definitiveOID | definitiveOIDandIRI | ;
 
 definitiveOID: LEFT_CURLY_BRACKET definitiveObjIdComponentList RIGHT_CURLY_BRACKET;
 
@@ -29,19 +29,19 @@ definitiveNumberForm : NUMBER;
 
 definitiveNameAndNumberForm: IDENTIFIER LEFT_PARENTHESIS definitiveNumberForm RIGHT_PARENTHESIS;
 
-encodingReferenceDefault: ENCODINGREFERENCE INSTRUCTIONS | EMPTY ;
+encodingReferenceDefault: ENCODINGREFERENCE INSTRUCTIONS | ;
 
-extensionDefault : EXTENSIBILITY_IMPLIED | EMPTY ;
+extensionDefault : EXTENSIBILITY_IMPLIED | ;
 
-moduleBody: exports imports assignmentList | EMPTY ;
+moduleBody: exports imports assignmentList | ;
 
 exports: EXPORTS symbolsExported SEMICOLON | EXPORTS_ALL SEMICOLON | ;
 
-symbolsExported: symbolList | EMPTY;
+symbolsExported: symbolList | ;
 
-imports: IMPORTS symbolsImported SEMICOLON | EMPTY ;
+imports: IMPORTS symbolsImported SEMICOLON | ;
 
-symbolsImported: symbolsFromModuleList | EMPTY ;
+symbolsImported: symbolsFromModuleList | ;
 
 symbolsFromModuleList: (symbolsFromModule)+ ;
 
@@ -49,7 +49,7 @@ symbolsFromModule: symbolList FROM globalModuleReference ;
 
 globalModuleReference: modulereference assignedIdentifier ;
 
-assignedIdentifier: objectIdentifierValue | definedValue | EMPTY ;
+assignedIdentifier: objectIdentifierValue | definedValue | ;
 
 symbolList: symbol (COMMA symbol)* ;
 
@@ -180,26 +180,26 @@ builtinValue
 
 xMLBuiltinValue
 	: xMLBitStringValue
-	| xMLBooleanValue
-	| xMLCharacterStringValue
-	| xMLChoiceValue
-	| xMLEmbeddedPDVValue
-	| xMLEnumeratedValue
-	| xMLExternalValue
-//	| xMLInstanceOfValue
-	| xMLIntegerValue
-	| xMLIRIValue
-	| xMLNullValue
-	| xMLObjectIdentifierValue
-	| xMLOctetStringValue
-	| xMLRealValue
-	| xMLRelativeIRIValue
-	| xMLRelativeOIDValue
-	| xMLSequenceValue
-//	| xMLSequenceOfValue
-	| xMLSetValue
-//	| xMLSetOfValue
-//	| xMLPrefixedValue
+//	| xMLBooleanValue
+//	| xMLCharacterStringValue
+//	| xMLChoiceValue
+//	| xMLEmbeddedPDVValue
+//	| xMLEnumeratedValue
+//	| xMLExternalValue
+/*	| xMLInstanceOfValue  */
+//	| xMLIntegerValue
+//	| xMLIRIValue
+//	| xMLNullValue
+//	| xMLObjectIdentifierValue
+//	| xMLOctetStringValue
+//	| xMLRealValue
+//	| xMLRelativeIRIValue
+//	| xMLRelativeOIDValue
+//	| xMLSequenceValue
+/*	| xMLSequenceOfValue */
+//	| xMLSetValue
+/*	| xMLSetOfValue */
+/*	| xMLPrefixedValue */
 	| xMLTimeValue ;
 
 referencedValue
@@ -328,7 +328,7 @@ bitStringValue
 
 identifierList: IDENTIFIER (COMMA IDENTIFIER)* ;
 
-xMLBitStringValue: xMLTypedValue | XMLBSTRING | xMLIdentifierList | EMPTY ;
+xMLBitStringValue: xMLTypedValue | XMLBSTRING | xMLIdentifierList ;
 
 xMLIdentifierList: emptyElementList | textList ;
 
@@ -361,7 +361,7 @@ sequenceType
 
 extensionAndException: ELLIPSIS | ELLIPSIS exceptionSpec ;
 
-optionalExtensionMarker: COMMA ELLIPSIS | EMPTY ;
+optionalExtensionMarker: COMMA ELLIPSIS | ;
 
 componentTypeLists
     : rootComponentTypeList
@@ -374,7 +374,7 @@ rootComponentTypeList: componentTypeList ;
 
 extensionEndMarker: COMMA ELLIPSIS ;
 
-extensionAdditions: COMMA extensionAdditionList | EMPTY ;
+extensionAdditions: COMMA extensionAdditionList | ;
 
 extensionAdditionList: extensionAddition (COMMA extensionAddition)* ;
 
@@ -408,7 +408,7 @@ valueList: value (COMMA value)* ;
 
 namedValueList: namedValue | (COMMA namedValue)* ;
 
-xMLSequenceOfValue: xMLValueList | xMLDelimitedItemList | EMPTY;
+xMLSequenceOfValue: xMLValueList | xMLDelimitedItemList | EMPTY ;
 
 xMLValueList: (xMLValueOrEmpty)+ ;
 
@@ -498,7 +498,7 @@ asn1class
 	: UNIVERSAL
 	| APPLICATION
 	| PRIVATE
-	| EMPTY;
+	| ;
 
 encodingPrefixedType: encodingPrefix type ;
 
@@ -608,19 +608,19 @@ xMLCharacterStringValue : xMLRestrictedCharacterStringValue | xMLUnrestrictedCha
 
 // Chapter 41 Definition of restricted character string types
 restrictedCharacterStringType
-	: BMPString
-	| GeneralString
-	| GraphicString
-	| IA5String
-	| ISO646String
-	| NumericString
-	| PrintableString
-	| TeletexString
-	| T61String
-	| UniversalString
-	| UTF8String
-	| VideotexString
-	| VisibleString ;
+//	: 'BMPString'
+	: 'GeneralString'
+	| 'GraphicString'
+	| 'IA5String'
+	| 'ISO646String'
+	| 'NumericString'
+	| 'PrintableString'
+	| 'TeletexString'
+	| 'T61String'
+//	| 'UniversalString'
+//	| 'UTF8String'
+	| 'VideotexString'
+	| 'VisibleString' ;
 
 restrictedCharacterStringValue: CSTRING | characterStringList | quadruple | tuple ;
 
@@ -777,7 +777,7 @@ componentConstraint: valueConstraint presenceConstraint ;
 
 valueConstraint: constraint | EMPTY;
 
-presenceConstraint: PRESENT | ABSENT | OPTIONAL | EMPTY ;
+presenceConstraint: PRESENT | ABSENT | OPTIONAL | ;
 
 patternConstraint: PATTERN value ;
 
@@ -802,7 +802,7 @@ exceptionSpec: EXCLAMATION exceptionIdentification | EMPTY;
 exceptionIdentification: signedNumber | definedValue | type COLON value ;
 
 // Chapter 54 Encoding Control Sections
-encodingControlSections : (encodingControlSection)+ | EMPTY;
+encodingControlSections : (encodingControlSection)+ | ;
 
 encodingControlSection: 'ENCODING-CONTROL' ENCODINGREFERENCE encodingInstructionAssignmentList ;
 
