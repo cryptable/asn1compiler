@@ -490,7 +490,7 @@ taggedType: tag type | tag IMPLICIT type | tag EXPLICIT type ;
 
 tag : LEFT_SQUARE_BRACKET encodingReference asn1class classNumber RIGHT_SQUARE_BRACKET ;
 
-encodingReference : ENCODINGREFERENCE COLON | EMPTY;
+encodingReference : ENCODINGREFERENCE COLON | ;
 
 classNumber: NUMBER | definedValue ;
 
@@ -607,9 +607,11 @@ characterStringValue: restrictedCharacterStringValue | unrestrictedCharacterStri
 xMLCharacterStringValue : xMLRestrictedCharacterStringValue | xMLUnrestrictedCharacterStringValue ;
 
 // Chapter 41 Definition of restricted character string types
-restrictedCharacterStringType
-//	: 'BMPString'
-	: 'GeneralString'
+restrictedCharacterStringType : TYPEREFERENCE ;
+/**	
+	Checked in the code
+	: 'BMPString'
+	| 'GeneralString'
 	| 'GraphicString'
 	| 'IA5String'
 	| 'ISO646String'
@@ -617,10 +619,11 @@ restrictedCharacterStringType
 	| 'PrintableString'
 	| 'TeletexString'
 	| 'T61String'
-//	| 'UniversalString'
-//	| 'UTF8String'
+	| 'UniversalString'
+	| 'UTF8String'
 	| 'VideotexString'
-	| 'VisibleString' ;
+	| 'VisibleString' ; 
+*/
 
 restrictedCharacterStringValue: CSTRING | characterStringList | quadruple | tuple ;
 
