@@ -5,7 +5,7 @@ import Asn1Lexical;
 moduleDefinition: moduleIdentifier
 	  DEFINITIONS
 	  encodingReferenceDefault
-	  TagDefault
+	  tagDefault
 	  extensionDefault
 	  ASSIGNMENT
 	  BEGIN
@@ -25,11 +25,17 @@ definitiveObjIdComponentList: (definitiveObjIdComponent)+ ;
 
 definitiveObjIdComponent: nameForm | definitiveNumberForm | definitiveNameAndNumberForm ;
 
-definitiveNumberForm : NUMBER;
+definitiveNumberForm : number ;
 
 definitiveNameAndNumberForm: IDENTIFIER LEFT_PARENTHESIS definitiveNumberForm RIGHT_PARENTHESIS;
 
 encodingReferenceDefault: ENCODINGREFERENCE INSTRUCTIONS | ;
+
+tagDefault
+	: EXPLICIT_TAGS
+	| IMPLICIT_TAGS
+	| AUTOMATIC_TAGS
+	| ;
 
 extensionDefault : EXTENSIBILITY_IMPLIED | ;
 
@@ -87,7 +93,7 @@ itemSpec: TYPEREFERENCE | itemSpec FULL_STOP componentId ;
 
 // itemId: itemSpec ;
 
-componentId: IDENTIFIER | NUMBER | ASTERISK ;
+componentId: IDENTIFIER | number | ASTERISK ;
 
 // Chapter 16 Assigning types and values
 typeAssignment: TYPEREFERENCE ASSIGNMENT type ;
@@ -134,7 +140,8 @@ builtinType
 	| setOfType
 	| prefixedType
 	| timeType
-	| timeOfDayType ;
+	| timeOfDayType
+	| anyType ;
 
 referencedType
 	: definedType
@@ -224,13 +231,13 @@ emptyElementBoolean
 	| LESS_THAN_SIGN XML_FALSE XML_SINGLE_ENDTAG ;
 
 textBoolean
-	: EXTENDED_TRUE
-	| EXTENDED_FALSE ;
+	: extended_true
+	| extended_false ;
 
 /** Integer type */
 integerType
-	: NUMBER
-	| NUMBER LEFT_CURLY_BRACKET namedNumberList RIGHT_CURLY_BRACKET ;
+	: INTEGER 
+	| INTEGER LEFT_CURLY_BRACKET namedNumberList RIGHT_CURLY_BRACKET ;
 
 namedNumberList: namedNumber (COMMA namedNumber)* ;
 
@@ -238,7 +245,7 @@ namedNumber
 	: IDENTIFIER LEFT_PARENTHESIS signedNumber RIGHT_PARENTHESIS
 	| IDENTIFIER LEFT_PARENTHESIS definedValue RIGHT_PARENTHESIS ;
 
-signedNumber: HYPHEN_MINUS? NUMBER ;
+signedNumber: HYPHEN_MINUS? number ;
 
 integerValue
 	: signedNumber
@@ -249,7 +256,7 @@ xMLIntegerValue
 	| emptyElementInteger
 	| textInteger ;
 
-xMLSignedNumber: HYPHEN_MINUS? NUMBER;
+xMLSignedNumber: HYPHEN_MINUS?  number ;
 
 emptyElementInteger: LESS_THAN_SIGN IDENTIFIER XML_SINGLE_ENDTAG ;
 
@@ -258,18 +265,24 @@ textInteger: IDENTIFIER ;
 // Chapter 20 Notation for the enumerated type
 enumeratedType: ENUMERATED LEFT_CURLY_BRACKET enumerations RIGHT_CURLY_BRACKET ;
 
+// enumerations
+// 	: rootEnumeration
+//	| rootEnumeration COMMA ELLIPSIS exceptionSpec
+//	| rootEnumeration COMMA ELLIPSIS exceptionSpec COMMA additionalEnumeration ;
+
 enumerations
-	: rootEnumeration
-	| rootEnumeration COMMA ELLIPSIS exceptionSpec
-	| rootEnumeration COMMA ELLIPSIS exceptionSpec COMMA additionalEnumeration ;
+ 	: enumeration
+	| enumeration COMMA ELLIPSIS exceptionSpec
+	| enumeration COMMA ELLIPSIS exceptionSpec COMMA enumeration ;
 
-rootEnumeration: enumeration ;
+// rootEnumeration: enumeration ;
 
-additionalEnumeration: enumeration ;
+// additionalEnumeration: enumeration ;
 
 enumeration: enumerationItem | (COMMA enumerationItem)* ;
 
 enumerationItem: IDENTIFIER | namedNumber ;
+// enumerationItem: namedNumber ;
 
 enumeratedValue: IDENTIFIER ;
 
@@ -287,7 +300,7 @@ realValue
 	| specialRealValue ;
 
 numericRealValue
-	: HYPHEN_MINUS? REALNUMBER
+	: HYPHEN_MINUS? realnumber
 	| sequenceValue ;
 
 specialRealValue
@@ -297,7 +310,7 @@ specialRealValue
 
 xMLRealValue: xMLNumericRealValue | xMLSpecialRealValue ;
 
-xMLNumericRealValue: HYPHEN_MINUS? REALNUMBER ;
+xMLNumericRealValue: HYPHEN_MINUS? realnumber ;
 
 xMLSpecialRealValue: emptyElementReal | textReal ;
 
@@ -316,19 +329,19 @@ bitStringType: BIT_STRING | BIT_STRING LEFT_CURLY_BRACKET namedBitList RIGHT_CUR
 namedBitList: namedBit (COMMA namedBit)* ;
 
 namedBit
-	: IDENTIFIER LEFT_PARENTHESIS NUMBER RIGHT_PARENTHESIS
+	: IDENTIFIER LEFT_PARENTHESIS number RIGHT_PARENTHESIS
 	| IDENTIFIER LEFT_PARENTHESIS definedValue RIGHT_PARENTHESIS ;
 
 bitStringValue
-	: BSTRING
-	| HSTRING
+	: bSTRING
+	| hSTRING
 	| LEFT_CURLY_BRACKET identifierList RIGHT_CURLY_BRACKET
 	| LEFT_CURLY_BRACKET RIGHT_CURLY_BRACKET
 	| CONTAINING value ;
 
 identifierList: IDENTIFIER (COMMA IDENTIFIER)* ;
 
-xMLBitStringValue: xMLTypedValue | XMLBSTRING | xMLIdentifierList ;
+xMLBitStringValue: xMLTypedValue | xMLBSTRING | xMLIdentifierList ;
 
 xMLIdentifierList: emptyElementList | textList ;
 
@@ -340,18 +353,18 @@ textList: (IDENTIFIER)+ ;
 octetStringType: OCTET_STRING ;
 
 octetStringValue
-	: BSTRING
-	| HSTRING
+	: bSTRING
+	| hSTRING
 	| CONTAINING value ;
 
-xMLOctetStringValue: xMLTypedValue | XMLHSTRING ;
+xMLOctetStringValue: xMLTypedValue | xMLHSTRING ;
 
 // Chapter 24 Notation for the null type
 nullType: NULL ;
 
 nullValue: NULL ;
 
-xMLNullValue: EMPTY ;
+xMLNullValue: '' ;
 
 // Chapter 25 Notation for sequence types
 sequenceType
@@ -382,7 +395,7 @@ extensionAddition: componentType | extensionAdditionGroup ;
 
 extensionAdditionGroup: LEFT_VERSION_BRACKET versionNumber componentTypeList RIGHT_VERSION_BRACKET ;
 
-versionNumber: NUMBER COLON | EMPTY;
+versionNumber: number COLON | ;
 
 componentTypeList: componentType (COMMA componentType)* ;
 
@@ -392,7 +405,7 @@ sequenceValue: LEFT_CURLY_BRACKET componentValueList RIGHT_CURLY_BRACKET | LEFT_
 
 componentValueList: namedValue (COMMA namedValue)* ;
 
-xMLSequenceValue: xMLComponentValueList | EMPTY ;
+xMLSequenceValue: xMLComponentValueList | ;
 
 xMLComponentValueList: (xMLNamedValue)+ ;
 
@@ -408,7 +421,7 @@ valueList: value (COMMA value)* ;
 
 namedValueList: namedValue | (COMMA namedValue)* ;
 
-xMLSequenceOfValue: xMLValueList | xMLDelimitedItemList | EMPTY ;
+xMLSequenceOfValue: xMLValueList | xMLDelimitedItemList | ;
 
 xMLValueList: (xMLValueOrEmpty)+ ;
 
@@ -432,7 +445,7 @@ setValue
 
 xMLSetValue
 	: xMLComponentValueList
-	| EMPTY ;
+	| ;
 
 
 // Chapter 28 Notation for set-of types
@@ -448,7 +461,7 @@ setOfValue
 xMLSetOfValue
 	: xMLValueList
 	| xMLDelimitedItemList
-	| EMPTY ;
+	| ;
 
 // Chapter 29 Notation for choice types
 choiceType
@@ -460,7 +473,7 @@ alternativeTypeLists
 
 rootAlternativeTypeList: alternativeTypeList ;
 
-extensionAdditionAlternatives: COMMA extensionAdditionAlternativesList | EMPTY;
+extensionAdditionAlternatives: COMMA extensionAdditionAlternativesList | ;
 
 extensionAdditionAlternativesList: extensionAdditionAlternative (COMMA extensionAdditionAlternative)* ;
 
@@ -492,7 +505,7 @@ tag : LEFT_SQUARE_BRACKET encodingReference asn1class classNumber RIGHT_SQUARE_B
 
 encodingReference : ENCODINGREFERENCE COLON | ;
 
-classNumber: NUMBER | definedValue ;
+classNumber: number | definedValue ;
 
 asn1class
 	: UNIVERSAL
@@ -517,7 +530,7 @@ objIdComponents: nameForm | numberForm | nameAndNumberForm | definedValue ;
 
 nameForm: IDENTIFIER ;
 
-numberForm: NUMBER | definedValue ;
+numberForm: number | definedValue ;
 
 nameAndNumberForm: IDENTIFIER LEFT_PARENTHESIS numberForm RIGHT_PARENTHESIS ;
 
@@ -527,7 +540,7 @@ xMLObjIdComponentList: xMLObjIdComponent | xMLObjIdComponent FULL_STOP xMLObjIdC
 
 xMLObjIdComponent: nameForm | xMLNumberForm | xMLNameAndNumberForm ;
 
-xMLNumberForm: NUMBER ;
+xMLNumberForm: number ;
 
 xMLNameAndNumberForm: IDENTIFIER LEFT_PARENTHESIS xMLNumberForm RIGHT_PARENTHESIS ;
 
@@ -555,7 +568,7 @@ firstArcIdentifier: SOLIDUS arcIdentifier ;
 
 subsequentArcIdentifier : SOLIDUS arcIdentifier subsequentArcIdentifier | ;
 
-arcIdentifier: INTEGERUNICODELABEL | NONINTEGERUNICODELABEL ;
+arcIdentifier: iNTEGERUNICODELABEL | NONINTEGERUNICODELABEL ;
 
 xMLIRIValue: firstArcIdentifier subsequentArcIdentifier ;
 
@@ -585,9 +598,9 @@ xMLExternalValue: xMLSequenceValue ;
 // Chapter 38 The time type
 timeType: TIME ;
 
-timeValue: TSTRING ;
+timeValue: tSTRING ;
 
-xMLTimeValue: XMLTSTRING ;
+xMLTimeValue: xMLTSTRING ;
 
 dateType: DATE ;
 
@@ -635,21 +648,21 @@ charsDefn: CSTRING | quadruple | tuple | definedValue ;
 
 quadruple : LEFT_CURLY_BRACKET group COMMA plane COMMA row COMMA cell RIGHT_CURLY_BRACKET ;
 
-group: NUMBER ;
+group: number ;
 
-plane: NUMBER ;
+plane: number ;
 
-row: NUMBER ;
+row: number ;
 
-cell: NUMBER ;
+cell: number ;
 
 tuple : LEFT_CURLY_BRACKET tableColumn COMMA tableRow RIGHT_CURLY_BRACKET ;
 
-tableColumn: NUMBER ;
+tableColumn: number ;
 
-tableRow: NUMBER ;
+tableRow: number ;
 
-xMLRestrictedCharacterStringValue: XMLCSTRING ;
+xMLRestrictedCharacterStringValue: xMLCSTRING ;
 
 // Chapter 42 Naming characters, collections and property category sets
 
@@ -744,7 +757,7 @@ singleValue: value ;
 
 containedSubtype: includes type ;
 
-includes: INCLUDES | EMPTY;
+includes: INCLUDES | ;
 
 valueRange: lowerEndpoint RANGE upperEndpoint ;
 
@@ -778,7 +791,7 @@ namedConstraint: IDENTIFIER componentConstraint ;
 
 componentConstraint: valueConstraint presenceConstraint ;
 
-valueConstraint: constraint | EMPTY;
+valueConstraint: constraint | ;
 
 presenceConstraint: PRESENT | ABSENT | OPTIONAL | ;
 
@@ -800,7 +813,7 @@ timePointRange: valueRange ;
 
 recurrenceRange: valueRange ;
 
-exceptionSpec: EXCLAMATION exceptionIdentification | EMPTY;
+exceptionSpec: EXCLAMATION exceptionIdentification | ;
 
 exceptionIdentification: signedNumber | definedValue | type COLON value ;
 
@@ -933,7 +946,7 @@ fixedTypeFieldVal: builtinValue | referencedValue ;
 
 xMLObjectClassFieldValue: xMLOpenTypeFieldVal | xMLFixedTypeFieldVal ;
 
-xMLOpenTypeFieldVal: xMLTypedValue | XMLHSTRING ;
+xMLOpenTypeFieldVal: xMLTypedValue | xMLHSTRING ;
 
 xMLFixedTypeFieldVal: xMLBuiltinValue ;
 
@@ -1052,3 +1065,6 @@ parameterizedObject: definedObject actualParameterList ;
 actualParameterList: LEFT_CURLY_BRACKET actualParameter (COMMA actualParameter)* RIGHT_CURLY_BRACKET ;
 
 actualParameter: type | value | valueSet | definedObjectClass | object | objectSet ;
+
+// Deprecated ANY type
+anyType: ANY (DEFINED_BY IDENTIFIER)? ;

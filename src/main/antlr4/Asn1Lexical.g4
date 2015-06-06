@@ -35,11 +35,11 @@ END: 'END' ;
 
 INSTRUCTIONS: 'INSTRUCTIONS' ;
 
-fragment EXPLICIT_TAGS: 'EXPLICIT TAGS' ;
+EXPLICIT_TAGS: 'EXPLICIT TAGS' ;
 
-fragment IMPLICIT_TAGS: 'IMPLICIT TAGS' ;
+IMPLICIT_TAGS: 'IMPLICIT TAGS' ;
 
-fragment AUTOMATIC_TAGS: 'AUTOMATIC TAGS' ;
+AUTOMATIC_TAGS: 'AUTOMATIC TAGS' ;
 
 EXTENSIBILITY_IMPLIED: 'EXTENSIBILITY IMPLIED' ;
 
@@ -199,6 +199,8 @@ ENCODING_CONTROL: 'ENCODING-CONTROL' ;
 
 CONSTRAINED_BY: 'CONSTRAINED BY' ;
 
+INTEGER: 'INTEGER' ;
+
 // chapter 12.28 XML end tag start item
 XML_ENDTAG: '</';
 
@@ -209,13 +211,13 @@ XML_SINGLE_ENDTAG: '/>';
 XML_TRUE: 'true' ;
 
 // chapter 12.31 XML boolean extended-true item
-EXTENDED_TRUE: 'true' | '1' ;
+extended_true: XML_TRUE | ONE ;
 
 // chapter 12.32 XML boolean false item
 XML_FALSE: 'false' ;
 
 // chapter 12.33 XML boolean extended-false item
-EXTENDED_FALSE: 'false' | '0' ;
+extended_false: XML_FALSE | ZERO ;
 
 // chapter 12.34 XML real not-a-number item
 XML_NAN: 'NaN' ;
@@ -238,6 +240,11 @@ LEFT_VERSION_BRACKET: '[[' ;
 // chapter 12.24 Right version brackets
 RIGHT_VERSION_BRACKET: ']]' ;
 
+// Deprecated ANY type
+ANY: 'ANY' ;
+
+DEFINED_BY: 'DEFINED BY' ;
+
 // chapter 12.6 Comments
 // Comment --
 fragment COMMENT_DASHES: '--' ;
@@ -248,9 +255,13 @@ fragment BEGIN_COMMENT: '/*' ;
 // End comment */
 fragment END_COMMENT: '*/' ;
 fragment ASN_CHARACTER_SET
-    : CAPITAL
-    | SMALL
-    | DIGIT
+    : NONHEX_CAPITAL
+    | NONHEX_SMALL
+    | HEX_CAPITAL
+    | HEX_SMALL
+    | ZERO
+    | ONE
+    | NONZERO
     | EXCLAMATION
     | QUOTATION
     | AMPERSAND
@@ -274,12 +285,11 @@ fragment ASN_CHARACTER_SET
     | LOW_LINE
     | LEFT_CURLY_BRACKET
     | VERTICAL_LINE
-    | RIGHT_CURLY_BRACKET ;
+    | RIGHT_CURLY_BRACKET
+    | PLUS ;
 
-COMMENT
-	: (COMMENT_DASHES (ASN_CHARACTER_SET | ' ' | '\t')* COMMENT_DASHES
-	| COMMENT_DASHES (ASN_CHARACTER_SET | ' ' | '\t')* NEWLINE
-    | BEGIN_COMMENT (ASN_CHARACTER_SET | WS)* END_COMMENT) -> skip;
+COMMENT1: COMMENT_DASHES (ASN_CHARACTER_SET | ' ' | '\t')*? ( COMMENT_DASHES | NEWLINE) -> skip;
+COMMENT2: BEGIN_COMMENT (ASN_CHARACTER_SET | WS)*? END_COMMENT -> skip;
 
 // chapter 12.1 General Rules
 WS : ('\t' | '\n' | '\u0011' | '\u0012' | '\r' | ' ') -> skip;
@@ -309,17 +319,23 @@ LOW_LINE: '_' ;
 LEFT_CURLY_BRACKET: '{' ;
 VERTICAL_LINE: '|' ;
 RIGHT_CURLY_BRACKET: '}' ;
+PLUS: '+' ;
 
 // General lexicons
+NONHEX_CAPITAL: [G-Z] ;
+fragment NONHEX_SMALL: [g-z] ;
 fragment CAPITAL: [A-Z] ;
 fragment SMALL: [a-z] ;
-fragment DIGIT: [0-9] ;
 fragment LETTER: CAPITAL | SMALL ;
 fragment ALPHANUMERIC: [a-zA-Z0-9] ;
-fragment NONZERO: [1-9] ;
-fragment BIT: [01] ;
-fragment HEX: [0-9A-F] ;
-fragment XMLHEX: [0-9A-Fa-f] ;
+// (HEX_SMALL | NONHEX_SMALL |HEX_CAPITAL | NONHEX_CAPITAL | ZERO | ONE | NONZERO)
+ZERO: '0';
+ONE: '1';
+NONZERO: [2-9] ;
+
+fragment BIT: ( ZERO | ONE ) ;
+HEX_CAPITAL: [A-F] ;
+HEX_SMALL: [a-f] ;
 
 // chapter 12.2 Type references
 TYPEREFERENCE: CAPITAL (ALPHANUMERIC | '-' ALPHANUMERIC)* ;
@@ -334,25 +350,25 @@ valuereference: IDENTIFIER ;
 modulereference: TYPEREFERENCE ;
 
 // chapter 12.7 Empty
-EMPTY: ;
+// EMPTY: ;
 
 // chapter 12.8 Numbers
-NUMBER: DIGIT | NONZERO DIGIT*;
+number:  ((ONE | NONZERO) (ZERO | ONE | NONZERO)*) | ZERO ;
 
 // chapter 12.9 Real numbers
-REALNUMBER: NUMBER ('.' DIGIT*)? ('e'|'E' '-'? NUMBER)?;
+realnumber: number (FULL_STOP (ZERO | ONE | NONZERO)*)? ('e'|'E' HYPHEN_MINUS? number )?;
 
 // chapter 12.10 XML Binary string
-BSTRING: BIT+ | '\'' BIT+ '\'B' ;
+bSTRING: (ZERO | ONE)+ | APOSTROPHE (ZERO | ONE)+ APOSTROPHE 'B' ;
 
 // chapter 12.11 XML Binary string
-XMLBSTRING: BIT+ ;
+xMLBSTRING: ( ZERO | ONE )+ ;
 
 // chapter 12.12 Hexadecimal string
-HSTRING: HEX+ | '\'' HEX+ '\'H' ;
+hSTRING: (ZERO | ONE | NONZERO | HEX_CAPITAL)+ | APOSTROPHE (ZERO | ONE | NONZERO | HEX_CAPITAL)+ APOSTROPHE 'H' ;
 
 // chapter 12.13 XML hexadecimal string item
-XMLHSTRING: XMLHEX+ ;
+xMLHSTRING: (ZERO | ONE | NONZERO | HEX_CAPITAL | HEX_SMALL)+ ;
 
 // chapter 12.14 Character strings
 // TODO: extend further according to ISO/IEC 8824
@@ -361,40 +377,40 @@ CSTRING: ('"' CSTRINGCHAR+ '"')+;
 
 // chapter 12.15 XML character string item
 XMLCHARACTER: [\u0009\u0010\u0013\u0020-\uD7FF\uE000-\uFFFD\u010000-\u10FFFF] ;
-XMLCHARCODES: '&#' NUMBER* ';' ;
-XMLCHARHEXCODES: '&#x' XMLHEX* ';' ;
+xMLCHARCODES: '&#' number* ';' ;
+xMLCHARHEXCODES: '&#x' (ZERO | ONE | NONZERO | HEX_CAPITAL | HEX_SMALL)* ';' ;
 XMLCHARAMPCODES: '&amp;' | '&lt;' | '&gt;' ;
 XMLCHARXMLCODES
 	: '<nul/>' | '<soh/>' | '<stx/>' | '<etx/>' | '<eot/>' | '<enq/>' | '<ack/>' | '<bel/>' | '<bs/>'
 	| '<vt/>' | '<ff/>' | '<so/>' | '<si/>' | '<dle/>' | '<dc1/>' | '<dc2/>' | '<dc3/>' | '<dc4/>' | '<nak/>'
 	| '<syn/>' | '<etb/>' | '<can/>' | '<em/>' | '<sub/>' | '<esc/>' | '<is4/>' | '<is3/>' | '<is2/>' | '<is1/>' ;
 
-// XMLCSTRING: (XMLCHARACTER | XMLCHARCODES | XMLCHARHEXCODES | XMLCHARAMPCODES | XMLCHARXMLCODES)+;
+xMLCSTRING: (XMLCHARACTER | xMLCHARCODES | xMLCHARHEXCODES | XMLCHARAMPCODES | XMLCHARXMLCODES)+;
 
 // chapter 12.16 Simple string item
-fragment SIMPLESTRINGCODES: [\u0032-\u007E] ;
 
-SIMPLESTRING: '"' SIMPLESTRINGCODES+ '"' ;
+SIMPLESTRING: '"' [\u0032-\u007E]+ '"' ;
 
 // chapter 12.17 Time string item
-TSTRINGCHARACTER: [0-9+-:.,/CDHMRPSTWYZ] ;
+// TSTRINGCHARACTER: [0-9+-:.,/CDHMRPSTWYZ] ;
 
-TSTRING: '"' TSTRINGCHARACTER+ '"' ;
+tSTRING
+	: '"' ( ZERO | ONE | NONZERO | PLUS | HYPHEN_MINUS | COLON | FULL_STOP | COMMA | SOLIDUS | HEX_CAPITAL | NONHEX_CAPITAL )+ '"' ;
 
 // chapter 12.18 XML Time string item
-// XMLTSTRING: TSTRINGCHARACTER+ ;
+xMLTSTRING: ( ZERO | ONE | NONZERO | PLUS | HYPHEN_MINUS | COLON | FULL_STOP | COMMA | SOLIDUS | HEX_CAPITAL | NONHEX_CAPITAL )+ ;
 
 // chapter 12.19 property and settings name lexical item
-PSNAME: CAPITAL (ALPHANUMERIC | '-' ALPHANUMERIC)* ;
+PSNAME: (HEX_CAPITAL | NONHEX_CAPITAL) (ALPHANUMERIC | '-' ALPHANUMERIC)* ;
 
 // chapter 12.25 encoding references
-ENCODINGREFERENCE: CAPITAL ([A-Z0-9] | '-' [A-Z0-9])* ;
+ENCODINGREFERENCE: (HEX_CAPITAL | NONHEX_CAPITAL) (ALPHANUMERIC | '-' ALPHANUMERIC)* ;
 
 // chapter 12.26 Integer-valued Unicode labels ;
-INTEGERUNICODELABEL: NUMBER ;
+iNTEGERUNICODELABEL: number ;
 
 // chapter 12.27 Non-integer Unicode labels ;
-UNICODENONINTEGER
+fragment UNICODENONINTEGER
 	: [-._~0-9A-Za-z]
 	| [\x000000A0-\x0000DFFE]
 	| [\x0000F900-\x0000FDCF]
@@ -428,9 +444,9 @@ XMLASN1TYPENAME
 	| 'SET' | 'SET_OF' | 'TIME' | 'TIME_OF_DAY' ;
 
 // chapter 12.37 Single character
-SINLE_CHAR
-	: '{' | '}' | '<' | '>' | ',' | '.' | '/' | '(' | ')' | '[' | ']'
-	| '-' | ':' | '=' | '"' | '\'' | ' ' | ';' | '@' | '|' | '!' | '^' ;
+// SINLE_CHAR
+//	: '{' | '}' | '<' | '>' | ',' | '.' | '/' | '(' | ')' | '[' | ']'
+//	| '-' | ':' | '=' | '"' | '\'' | ' ' | ';' | '@' | '|' | '!' | '^' ;
 
 objectclassreference: TYPEREFERENCE ;
 
@@ -447,12 +463,6 @@ valuesetfieldreference: '&' TYPEREFERENCE ;
 objectfieldreference: '&' objectreference ;
 
 objectsetfieldreference: '&' objectsetreference ;
-
-TagDefault
-	: EXPLICIT_TAGS
-	| IMPLICIT_TAGS
-	| AUTOMATIC_TAGS
-	| EMPTY ;
 
 WORD
 	: 'ABSENT' | 'ENCODED' | 'ABSTRACT-SYNTAX' | 'ENCODING-CONTROL' | 'ISO646String'
