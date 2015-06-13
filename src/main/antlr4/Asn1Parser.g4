@@ -265,24 +265,18 @@ textInteger: IDENTIFIER ;
 // Chapter 20 Notation for the enumerated type
 enumeratedType: ENUMERATED LEFT_CURLY_BRACKET enumerations RIGHT_CURLY_BRACKET ;
 
-// enumerations
-// 	: rootEnumeration
-//	| rootEnumeration COMMA ELLIPSIS exceptionSpec
-//	| rootEnumeration COMMA ELLIPSIS exceptionSpec COMMA additionalEnumeration ;
-
 enumerations
- 	: enumeration
-	| enumeration COMMA ELLIPSIS exceptionSpec
-	| enumeration COMMA ELLIPSIS exceptionSpec COMMA enumeration ;
+ 	: rootEnumeration
+	| rootEnumeration COMMA ELLIPSIS exceptionSpec
+	| rootEnumeration COMMA ELLIPSIS exceptionSpec COMMA additionalEnumeration ;
 
-// rootEnumeration: enumeration ;
+rootEnumeration: enumeration ;
 
-// additionalEnumeration: enumeration ;
+additionalEnumeration: enumeration ;
 
-enumeration: enumerationItem | (COMMA enumerationItem)* ;
+enumeration: enumerationItem (COMMA enumerationItem)* ;
 
 enumerationItem: IDENTIFIER | namedNumber ;
-// enumerationItem: namedNumber ;
 
 enumeratedValue: IDENTIFIER ;
 
