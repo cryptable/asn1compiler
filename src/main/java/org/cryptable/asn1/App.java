@@ -1,4 +1,4 @@
-package org.cryptable.crypto;
+package org.cryptable.asn1;
 
 /**
  * Hello world!
