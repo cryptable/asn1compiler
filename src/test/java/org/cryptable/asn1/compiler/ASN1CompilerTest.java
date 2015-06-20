@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class ASN1CompilerTest {
 
     @Test
-    public void compileTest(void) {
+    public void compileTest() {
 
     }
 }
