@@ -38,6 +38,7 @@ public class BERBoolean implements ASN1Boolean {
 
     /**
      * parameterized constructor
+     *
      * @param value set boolean value with construction
      */
     public BERBoolean(final boolean value) {
@@ -45,8 +46,29 @@ public class BERBoolean implements ASN1Boolean {
     }
 
     /**
+     * check if the length is indefinite (used in BER objects)
+     *
+     * @return the value of the indefinite length
+     */
+    public boolean isIndefiniteLength() {
+        return false;
+    }
+
+    /**
+     * Get length for BER encoded Boolean
+     *
+     * @return This will return 3
+     */
+    public int getLength() {
+        return 3;
+    }
+
+    /**
      * BER encoding of the boolean value
-     * 0x01|0x01|value
+     * true: 0x01|0x01|0xFF
+     * false: 0x01|Ox01|0x00
+     *
+     * @return 3 bytes 0x01|0x01|value
      */
     public byte[] encode() {
         byte[] value = { 0x01, 0x01, 0x00 };
