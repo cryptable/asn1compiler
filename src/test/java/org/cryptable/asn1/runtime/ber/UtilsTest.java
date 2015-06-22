@@ -23,10 +23,10 @@ public class UtilsTest {
     public void testCalcutateLengthByteLength() throws ASN1Exception {
 
         assertEquals(1, Utils.calculateLengthByteLength(127));
-        assertEquals(2, Utils.calculateLengthByteLength(128));
+        assertEquals(3, Utils.calculateLengthByteLength(128));
         assertEquals(3, Utils.calculateLengthByteLength(127 * 256 + 255));
-        assertEquals(3, Utils.calculateLengthByteLength(128 * 256));
+        assertEquals(4, Utils.calculateLengthByteLength(128 * 256));
         assertEquals(4, Utils.calculateLengthByteLength(127 * 256 * 256 + 256 * 255 + 255));
-        assertEquals(4, Utils.calculateLengthByteLength(128 * 256 * 256));
+        assertEquals(5, Utils.calculateLengthByteLength(128 * 256 * 256));
     }
 }

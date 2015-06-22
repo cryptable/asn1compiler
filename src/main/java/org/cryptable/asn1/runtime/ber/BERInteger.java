@@ -25,7 +25,7 @@ public class BERInteger implements ASN1Integer {
         return bigInteger;
     }
 
-    public void setASN1Integer(BigInteger bigInteger) {
+    public void setASN1Integer(BigInteger bigInteger) throws ASN1Exception {
         this.bigInteger = bigInteger;
     }
 

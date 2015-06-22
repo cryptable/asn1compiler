@@ -1,5 +1,7 @@
 package org.cryptable.asn1.runtime;
 
+import org.cryptable.asn1.runtime.exception.ASN1Exception;
+
 import java.math.BigInteger;
 
 /**
@@ -21,5 +23,5 @@ public interface ASN1Integer extends ASN1Object {
      *
      * @param bigInteger The ASN1 integer as BigInteger to be set
      */
-    void setASN1Integer(BigInteger bigInteger);
+    void setASN1Integer(BigInteger bigInteger) throws ASN1Exception;
 }
