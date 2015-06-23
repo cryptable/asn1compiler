@@ -121,6 +121,36 @@ public class BERIntegerTest {
         assertArrayEquals(byteBERInteger, berInteger.encode());
     }
 
+    @Test
+    public void laymansguideEncodeBERIntegerTest() throws ASN1Exception, IOException {
+        byte[] byteBERInteger0 = { 0x02, 0x01, 0x00 };
+        BigInteger bigInteger0 = BigInteger.ZERO;
+        byte[] byteBERInteger127 = { 0x02, 0x01, 0x7F };
+        BigInteger bigInteger127 = BigInteger.valueOf(127);
+        byte[] byteBERInteger128 = { 0x02, 0x02, 0x00, (byte)0x80 };
+        BigInteger bigInteger128 = BigInteger.valueOf(128);
+        byte[] byteBERInteger256 = { 0x02, 0x02, 0x01, 0x00 };
+        BigInteger bigInteger256 = BigInteger.valueOf(256);
+        byte[] byteBERIntegerMin128 = { 0x02, 0x01, (byte)0x80 };
+        BigInteger bigIntegerMin128 = BigInteger.valueOf(-128);
+        byte[] byteBERIntegerMin129 = { 0x02, 0x02, (byte)0xFF, (byte)0x7F };
+        BigInteger bigIntegerMin129 = BigInteger.valueOf(-129);
+
+        BERInteger berInteger0 = new BERInteger(bigInteger0);
+        BERInteger berInteger127 = new BERInteger(bigInteger127);
+        BERInteger berInteger128 = new BERInteger(bigInteger128);
+        BERInteger berInteger256 = new BERInteger(bigInteger256);
+        BERInteger berIntegerMin128 = new BERInteger(bigIntegerMin128);
+        BERInteger berIntegerMin129 = new BERInteger(bigIntegerMin129);
+
+        assertArrayEquals(byteBERInteger0, berInteger0.encode());
+        assertArrayEquals(byteBERInteger127, berInteger127.encode());
+        assertArrayEquals(byteBERInteger128, berInteger128.encode());
+        assertArrayEquals(byteBERInteger256, berInteger256.encode());
+        assertArrayEquals(byteBERIntegerMin128, berIntegerMin128.encode());
+        assertArrayEquals(byteBERIntegerMin129, berIntegerMin129.encode());
+    }
+
     @Test(expected = ASN1Exception.class)
     public void decodeUsingLongBERIntegerExceptionTest() throws ASN1Exception, IOException {
         Random rnd = new Random(1);

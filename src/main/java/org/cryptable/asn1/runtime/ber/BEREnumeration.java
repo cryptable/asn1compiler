@@ -4,6 +4,7 @@ import org.cryptable.asn1.runtime.ASN1Integer;
 import org.cryptable.asn1.runtime.exception.ASN1Exception;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +15,11 @@ import java.util.List;
 public class BEREnumeration extends BERInteger implements ASN1Integer {
 
     private List<BigInteger> enumeration;
+
+    public BEREnumeration() {
+        super();
+        enumeration = new ArrayList<BigInteger>();
+    }
 
     void addEnumeration(BigInteger integer) {
         enumeration.add(integer);
