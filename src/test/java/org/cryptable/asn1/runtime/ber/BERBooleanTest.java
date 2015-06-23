@@ -92,4 +92,26 @@ public class BERBooleanTest {
 
         berBoolean.decode(binValue);
     }
+
+    @Test
+    public void getLengthBERbooleanTest() throws ASN1Exception {
+        BERBoolean berBoolean = new BERBoolean();
+
+        byte[] binValue = {0x01, 0x01, (byte)0xFF};
+
+        berBoolean.decode(binValue);
+
+        assertEquals(3, berBoolean.getLength());
+    }
+
+    @Test
+    public void isIndefiniteLengthBERbooleanTest() throws ASN1Exception {
+        BERBoolean berBoolean = new BERBoolean();
+
+        byte[] binValue = {0x01, 0x01, (byte)0xFF};
+
+        berBoolean.decode(binValue);
+
+        assertEquals(false, berBoolean.isIndefiniteLength());
+    }
 }

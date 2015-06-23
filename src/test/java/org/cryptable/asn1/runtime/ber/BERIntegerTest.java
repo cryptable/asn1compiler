@@ -1,6 +1,7 @@
 package org.cryptable.asn1.runtime.ber;
 
 import org.cryptable.asn1.runtime.exception.ASN1Exception;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Random;
 import org.apache.commons.codec.binary.Hex;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
@@ -65,18 +67,6 @@ public class BERIntegerTest {
         berInteger.setASN1Integer(bigInteger);
 
         assertArrayEquals(byteBERInteger, berInteger.encode());
-    }
-
-    @Test
-    public void exceptionUsingSetBERIntegerTest() throws ASN1Exception {
-        byte[] byteInteger = { 0x03, (byte)0xF2, (byte)0xE6 };
-        byte[] byteBERInteger = { 0x02, 0x03, 0x03, (byte)0xF2, (byte)0xE6 };
-
-        BigInteger bigInteger = new BigInteger(byteInteger);
-        BERInteger berInteger = new BERInteger();
-        berInteger.decode(byteBERInteger);
-
-        assertEquals(bigInteger, berInteger.getASN1Integer());
     }
 
     @Test
@@ -151,8 +141,30 @@ public class BERIntegerTest {
         assertArrayEquals(byteBERIntegerMin129, berIntegerMin129.encode());
     }
 
-    @Test(expected = ASN1Exception.class)
+    @Test
+    public void getLengthBERbooleanTest() throws ASN1Exception {
+        byte[] byteBERIntegerMin129 = { 0x02, 0x02, (byte)0xFF, (byte)0x7F };
+        BERInteger berInteger = new BERInteger();
+
+        berInteger.decode(byteBERIntegerMin129);
+
+        assertEquals(4, berInteger.getLength());
+    }
+
+    @Test
+    public void isIndefiniteLengthBERbooleanTest() throws ASN1Exception {
+        BERInteger berInteger = new BERInteger(BigInteger.ONE);
+
+        assertEquals(false, berInteger.isIndefiniteLength());
+    }
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
+    @Test
     public void decodeUsingLongBERIntegerExceptionTest() throws ASN1Exception, IOException {
+        expectedException.expect(ASN1Exception.class);
+        expectedException.expectMessage("Wrong BERInteger byte array length [" + 1457 + ":" + 1548 + "]");
         Random rnd = new Random(1);
         byte[] byteInteger = new byte[1457];
         rnd.nextBytes(byteInteger);
@@ -164,11 +176,75 @@ public class BERIntegerTest {
         baos.write(byteInteger);
         byte[] byteBERInteger = baos.toByteArray();
 
-        BigInteger bigInteger = new BigInteger(byteInteger);
+        BERInteger berInteger = new BERInteger();
+
+        berInteger.decode(byteBERInteger);
+    }
+
+    @Test
+    public void tooSmallExceptionERIntegerTest() throws ASN1Exception, IOException {
+        expectedException.expect(ASN1Exception.class);
+        expectedException.expectMessage("Wrong BERInteger minimal length [" + 2 + "]");
+
+        byte[] byteBERInteger = { 0x02, 0x00 };
         BERInteger berInteger = new BERInteger();
 
         berInteger.decode(byteBERInteger);
 
-        assertEquals(bigInteger, berInteger.getASN1Integer());
+    }
+
+    @Test
+    public void wrongTAGExceptionBERIntegerTest() throws ASN1Exception, IOException {
+        expectedException.expect(ASN1Exception.class);
+        expectedException.expectMessage("Wrong BERInteger tag value [" + 1 + "]");
+
+        byte[] byteBERInteger = { 0x01, 0x01, 0x00 };
+        BERInteger berInteger = new BERInteger();
+
+        berInteger.decode(byteBERInteger);
+    }
+
+    @Test
+    public void wrongImplementationLengthBERIntegerTest() throws ASN1Exception, IOException {
+        expectedException.expect(ASN1Exception.class);
+        expectedException.expectMessage("Unsupported BERInteger length value [" + 5 + "] for this ASN1 implementation");
+
+        byte[] byteBERInteger = { 0x02, (byte)0x85, 0x01, 0x02, 0x03, 0x04, 0x05 };
+        BERInteger berInteger = new BERInteger();
+
+        berInteger.decode(byteBERInteger);
+    }
+
+    @Test
+    public void corruptMessageLengthBERIntegerTest() throws ASN1Exception, IOException {
+        expectedException.expect(ASN1Exception.class);
+        expectedException.expectMessage("BERInteger length value does not fit BER value  [" + 4 + ":" + 3 + "]");
+
+        byte[] byteBERInteger = { 0x02, (byte)0x83, 0x01, 0x02 };
+        BERInteger berInteger = new BERInteger();
+
+        berInteger.decode(byteBERInteger);
+    }
+
+    @Test
+    public void tooLargeMessageLengthBERIntegerTest() throws ASN1Exception, IOException {
+        expectedException.expect(ASN1Exception.class);
+        expectedException.expectMessage("Unsupported BERInteger length value [-2131693328]");
+
+        byte[] byteBERInteger = { 0x02, (byte)0x84, (byte)0x80, (byte)0xF0, (byte)0xF0, (byte)0xF0 };
+        BERInteger berInteger = new BERInteger();
+
+        berInteger.decode(byteBERInteger);
+    }
+
+    @Test
+    public void exceptionUsingSetBERIntegerTest() throws ASN1Exception {
+        expectedException.expect(ASN1Exception.class);
+        expectedException.expectMessage("Wrong BERInteger byte array length [5:4]");
+
+        byte[] byteBERInteger = { 0x02, 0x04, 0x03, (byte)0xF2, (byte)0xE6 };
+        BERInteger berInteger = new BERInteger();
+
+        berInteger.decode(byteBERInteger);
     }
 }
