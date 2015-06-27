@@ -10,6 +10,22 @@ import java.math.BigInteger;
  * Created by david on 6/20/15.
  */
 public class Utils {
+
+    /**
+     * get the TAG from the byteArray
+     *
+     * @param value bytae array containing the TAG Length Value
+     * @return return Integer value of the TAG
+     * @throws ASN1Exception when unsupported ASN1 TAG (greater then 31)
+     */
+    public static int getTAG(byte[] value) throws ASN1Exception {
+
+        if ((int)value[0] > 31)
+            throw new ASN1Exception("Not yet supported TAGs [" + (int)value[0] + "]");
+
+        return value[0];
+    }
+
     /**
      * Calculate the TAG length for the bytes
      *
@@ -35,7 +51,7 @@ public class Utils {
             throw new ASN1Exception("Invalid length (NEGATIVE)");
 
         if (length <= 127) {
-            return BigInteger.valueOf(length).toByteArray().length;
+            return 1;
         }
         else {
             return (BigInteger.valueOf(length).toByteArray().length + 1);
