@@ -68,28 +68,13 @@ public class BERInteger implements ASN1Integer {
         offset += 1;
 
         // Length
-        int length = 0;
+        int length;
 
         if ((value[1] & 0x80) == 0x80) {
             int lengthLength = value[1] & 0x7F;
 
-            if (lengthLength > 4)
-                throw new ASN1Exception("Unsupported BERInteger length value [" + lengthLength + "] for this ASN1 implementation");
+            length = Utils.getLengthOfBytes(value, lengthLength);
 
-            if ((value.length - 2) < lengthLength)
-                throw new ASN1Exception("BERInteger length value does not fit BER value  [" + value.length + ":" + lengthLength + "]");
-
-            byte[] lengthValue = new byte[lengthLength];
-            System.arraycopy(value, 2, lengthValue, 0, lengthLength);
-            BigInteger bigInteger = new BigInteger(lengthValue);
-            if (bigInteger.longValue() < 0)
-                throw new ASN1Exception("Unsupported BERInteger length value [" + bigInteger.toString(10) + "]");
-
-            length = bigInteger.intValue();
-
-            // value.length - TAG + LENGTH length + LENGTH value must be equal to the length
-            if ((value.length - (1 + 1 + lengthLength)) != length)
-                throw new ASN1Exception("Wrong BERInteger byte array length [" + (value.length - (1 + 1 + lengthLength)) + ":" + length + "]");
             offset += (1 + lengthLength);
         }
         else {

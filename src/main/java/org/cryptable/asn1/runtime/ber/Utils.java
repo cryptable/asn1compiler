@@ -81,4 +81,28 @@ public class Utils {
             return result;
         }
     }
+
+    public static int getLengthOfBytes(byte[] value, int lengthLength) throws ASN1Exception {
+        int length;
+
+        if (lengthLength > 4)
+            throw new ASN1Exception("Unsupported BERValue length value [" + lengthLength + "] for this ASN1 implementation");
+
+        if ((value.length - 2) < lengthLength)
+            throw new ASN1Exception("BERValue length value does not fit BER value  [" + value.length + ":" + lengthLength + "]");
+
+        byte[] lengthValue = new byte[lengthLength];
+        System.arraycopy(value, 2, lengthValue, 0, lengthLength);
+        BigInteger bigInteger = new BigInteger(lengthValue);
+        if (bigInteger.longValue() < 0)
+            throw new ASN1Exception("Unsupported BERValue length value [" + bigInteger.toString(10) + "]");
+
+        length = bigInteger.intValue();
+
+        // value.length - TAG + LENGTH length + LENGTH value must be equal to the length
+        if ((value.length - (1 + 1 + lengthLength)) != length)
+            throw new ASN1Exception("Wrong BERValue byte array length [" + (value.length - (1 + 1 + lengthLength)) + ":" + length + "]");
+
+        return length;
+    }
 }
