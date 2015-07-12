@@ -31,11 +31,31 @@ public class BERReal implements ASN1Real {
     }
 
     public void setASN1Real(Double value) throws ASN1Exception {
-        setASN1RealAsString(berDouble.toString());
+        setASN1Real(berDouble, null);
     }
 
     public void setASN1Real(Double berDouble, NumberFormat numberFormat) throws ASN1Exception {
-        setASN1RealAsString(numberFormat.format(berDouble));
+        if (berDouble.isNaN()) {
+            this.encoding = Encoding.SpecialRealValue;
+            this.specialRealValue = SpecialRealValues.NOT_A_NUMBER;
+        }
+        else if (berDouble.isInfinite()) {
+            this.encoding = Encoding.SpecialRealValue;
+            if (berDouble > 0) {
+                this.specialRealValue = SpecialRealValues.PLUS_INFINITY;
+            }
+            else {
+                this.specialRealValue = SpecialRealValues.MINUS_INFINITY;
+            }
+        }
+        else {
+            if (numberFormat == null) {
+                setASN1RealAsString(berDouble.toString());
+            }
+            else {
+                setASN1RealAsString(numberFormat.format(berDouble));
+            }
+        }
     }
 
     public Encoding getEncoding() {
@@ -43,29 +63,62 @@ public class BERReal implements ASN1Real {
     }
 
     public void setASN1RealAsString(String berValue) throws ASN1Exception {
-        this.encoding = Encoding.ISO6093;
 
-        if (berValue.matches("^ *(\\+|-)?\\d\\d*$")) {
-            this.iso6093Form = ISO6093.NR1;
+        if ("NaN".equals(berValue)) {
+            this.encoding = Encoding.SpecialRealValue;
+            this.berDouble = Double.NaN;
+            this.base = Base.BASE_10;
+            this.specialRealValue = SpecialRealValues.NOT_A_NUMBER;
         }
-        else if (berValue.matches("^ *(\\+|-)?((\\d\\d*\\.\\d*)|(\\d*\\.\\d\\d*))$")) {
-            this.iso6093Form = ISO6093.NR2;
+        else if ("Infinity".equals(berValue)) {
+            this.encoding = Encoding.SpecialRealValue;
+            this.berDouble = Double.POSITIVE_INFINITY;
+            this.base = Base.BASE_10;
+            this.specialRealValue = SpecialRealValues.PLUS_INFINITY;
         }
-        else if (berValue.matches("^ *(\\+|-)?((\\d*\\.\\d\\d*)|(\\d*\\.\\d\\d*))(E|e)(\\+|-)?\\d\\d*")) {
-            this.iso6093Form = ISO6093.NR3;
+        else if ("-Infinity".equals(berValue)) {
+            this.encoding = Encoding.SpecialRealValue;
+            this.berDouble = Double.NEGATIVE_INFINITY;
+            this.base = Base.BASE_10;
+            this.specialRealValue = SpecialRealValues.MINUS_INFINITY;
         }
         else {
-            throw new ASN1Exception("Illegal ISO6093 format [" + berValue + "]");
+            this.encoding = Encoding.ISO6093;
+
+            if (berValue.matches("^ *(\\+|-)?\\d\\d*$")) {
+                this.iso6093Form = ISO6093.NR1;
+            }
+            else if (berValue.matches("^ *(\\+|-)?((\\d\\d*\\.\\d*)|(\\d*\\.\\d\\d*))$")) {
+                this.iso6093Form = ISO6093.NR2;
+            }
+            else if (berValue.matches("^ *(\\+|-)?((\\d*\\.\\d\\d*)|(\\d*\\.\\d\\d*))(E|e)(\\+|-)?\\d\\d*")) {
+                this.iso6093Form = ISO6093.NR3;
+            }
+            else {
+                throw new ASN1Exception("Illegal ISO6093 format [" + berValue + "]");
+            }
+            this.berDouble = Double.valueOf(berValue);
+            this.base = Base.BASE_10;
+            this.iso6093 = berValue;
         }
-        this.berDouble = Double.valueOf(berValue);
-        this.base = Base.BASE_10;
-        this.iso6093 = berValue;
     }
 
     public void setSpecialRealValue(SpecialRealValues specialRealValue) {
         this.encoding = Encoding.SpecialRealValue;
         this.specialRealValue = specialRealValue;
-        this.berDouble = null;
+        this.base = Base.BASE_10;
+        if (specialRealValue == SpecialRealValues.PLUS_INFINITY) {
+            this.berDouble = Double.POSITIVE_INFINITY;
+        }
+        else if (specialRealValue == SpecialRealValues.MINUS_INFINITY) {
+            this.berDouble = Double.NEGATIVE_INFINITY;
+        }
+        else if (specialRealValue == SpecialRealValues.NOT_A_NUMBER) {
+            this.berDouble = Double.NaN;
+        }
+        else {
+            this.berDouble = null;
+        }
     }
 
     public SpecialRealValues getASN1SpecialRealValue() {
